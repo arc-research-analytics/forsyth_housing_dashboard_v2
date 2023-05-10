@@ -18,10 +18,12 @@ st.set_page_config(
 hide_default_format = """
         <style>
             .reportview-container .main footer {visibility: hidden;}    
-            #MainMenu, header, footer {visibility: hidden;}
+            #MainMenu, footer {visibility: hidden;}
             section.main > div:has(~ footer ) {
-            padding-bottom: 5px;}
-            div.block-container{padding-top:1.5rem;}
+                padding-bottom: 1px;
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-top: 10px;}
             span[data-baseweb="tag"] {
                 background-color: #022B3A !important;
                 }
@@ -36,6 +38,7 @@ hide_default_format = """
                 font-weight:900;
                 text-align: center;
                 }
+            div.stActionButton{visibility: hidden;}
         </style>
        """
 
@@ -61,9 +64,9 @@ years = st.sidebar.select_slider(
 # trends title 
 if years[0] != years[1]:
     # st.markdown(f"<h2 style='color:#022B3A; display: inline'>Forsyth County Housing Trends |</h2><h2 style='color:#FF8966; display: inline'> {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
 else:
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} only</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} only</h2>", unsafe_allow_html=True)
 
 # square footage slider
 sq_footage = st.sidebar.select_slider(
@@ -154,7 +157,7 @@ custom_colors = [
 # convert the above hex list to RGB values
 custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h in custom_colors]
 
-def map_2D():
+def mapper():
 
     # tabular data
     df = filter_data()[1]
@@ -183,33 +186,60 @@ def map_2D():
             include_lowest=True,
             duplicates='drop'
             )
-    
-    # create map intitial state
-    initial_view_state = pdk.ViewState(
-        latitude=34.207054643497315,
-        longitude=-84.10535919531371, 
-        zoom=9.6, 
-        max_zoom=12, 
-        min_zoom=8,
-        pitch=0,
-        bearing=0,
-        height=590
-    )
 
-    geojson = pdk.Layer(
+    if map_view == '2D':
+
+        # create map intitial state
+        initial_view_state = pdk.ViewState(
+            latitude=34.207054643497315,
+            longitude=-84.10535919531371, 
+            zoom=9.6, 
+            max_zoom=12, 
+            min_zoom=8,
+            pitch=0,
+            bearing=0,
+            height=590
+            )
+        geojson = pdk.Layer(
+            "GeoJsonLayer",
+            joined_df,
+            pickable=True,
+            autoHighlight=True,
+            highlight_color = [255, 255, 255, 80],
+            opacity=0.5,
+            stroked=True,
+            filled=True,
+            get_fill_color='choro_color',
+            get_line_color=[0, 0, 0, 255],
+            line_width_min_pixels=1
+        )
+    else:
+        initial_view_state = pdk.ViewState(
+            latitude=34.307054643497315,
+            longitude=-84.10535919531371, 
+            zoom=9.2, 
+            max_zoom=12, 
+            min_zoom=8,
+            pitch=45,
+            bearing=0,
+            height=590
+            )
+        geojson = pdk.Layer(
         "GeoJsonLayer",
         joined_df,
         pickable=True,
         autoHighlight=True,
-        highlight_color = [255, 255, 255, 80],
+        highlight_color = [255, 255, 255, 90],
         opacity=0.5,
-        stroked=True,
+        stroked=False,
         filled=True,
-        wireframe=True,
+        wireframe=False,
+        extruded=True,
+        get_elevation='unique_ID * 50',
         get_fill_color='choro_color',
-        get_line_color=[0, 0, 0, 255],
+        get_line_color='choro_color',
         line_width_min_pixels=1
-    )
+        )
 
     tooltip = {
             "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
@@ -225,9 +255,22 @@ def map_2D():
 
     return r
 
-
 col1, col2, col3 = st.columns([2,0.2,2])
-col1.pydeck_chart(map_2D(), use_container_width=True)
-col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
+map_view = col2.radio(
+            'Map view:',
+            ('2D', '3D'),
+            index=0
+            )
+
+
+col1.pydeck_chart(mapper(), use_container_width=True)
+
+if map_view == '2D':
+    col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
+else:
+    col1.markdown("<span style='color: #022B3A'><b>Note:</b> Shift + click to change map pitch & angle. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Greater sales volume represented by 'taller' census tracts.</span>", unsafe_allow_html=True)
+
+
+
 
 
