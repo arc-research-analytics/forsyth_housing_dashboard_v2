@@ -22,6 +22,9 @@ hide_default_format = """
             section.main > div:has(~ footer ) {
             padding-bottom: 5px;}
             div.block-container{padding-top:1.5rem;}
+            span[data-baseweb="tag"] {
+                background-color: #022B3A !important;
+                }
             [data-testid="stMetricValue"] {
                 color: #FF8966;
                 font-size: 30px;
@@ -89,11 +92,12 @@ def load_tab_data():
 
     # clean up the data
     df.rename(columns={
+        'Year  Built':'year_blt',
         'Year':'year_sale'
     }, inplace=True)
     df['GEOID'] = df['GEOID'].astype(str)
     df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
-    df = df[['Square Ft', 'year_sale', 'price_sf','GEOID','Sub_geo','unique_ID']]
+    df = df[['Square Ft', 'year_sale', 'year_blt','price_sf','GEOID','Sub_geo','unique_ID']]
 
     # return this item
     return df
@@ -123,13 +127,19 @@ def filter_data():
     if geography_included == 'Sub-geography':
         filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
 
-    return filtered_df
+    # now group by GEOID
+    grouped_df = filtered_df.groupby('GEOID').agg({
+        'price_sf':'median',
+        'year_blt':'median',
+        'unique_ID':'count',
+        }).reset_index()
+
+    return filtered_df, grouped_df
 
 
-df = filter_data()
+df = filter_data()[1]
 
 st.dataframe(df, use_container_width=True)
 st.write(df.shape)
-st.write(f"first year: {years[0]}, second year: {years[1]}")
 
 
