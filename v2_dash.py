@@ -1,9 +1,11 @@
 import streamlit as st
+from PIL import Image
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
-from PIL import Image
-from datetime import date
+import pydeck as pdk
+from millify import millify
+from millify import prettify
 
 # customize
 st.set_page_config(
@@ -12,15 +14,35 @@ st.set_page_config(
     page_icon=":house:",
     )
 
+# the custom css lives here:
+hide_default_format = """
+        <style>
+            .reportview-container .main footer {visibility: hidden;}    
+            #MainMenu, header, footer {visibility: hidden;}
+            section.main > div:has(~ footer ) {
+            padding-bottom: 5px;}
+            div.block-container{padding-top:1.5rem;}
+            [data-testid="stMetricValue"] {
+                color: #FF8966;
+                font-size: 30px;
+                font-weight:500;
+                text-align: center;
+                }
+            [data-testid="stMetricLabel"] {
+                color: #022B3A;
+                font-weight:900;
+                text-align: center;
+                }
+        </style>
+       """
+
+st.markdown(hide_default_format, unsafe_allow_html=True)
+
 # sidebar variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-im = Image.open('content/logo.png')
-col1, col2, col3 = st.sidebar.columns([1,1,1])
-col2.image(im, width=80)
-col2.write("")
-col2.write("")
+st.sidebar.markdown(f"<h3 style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</h3>", unsafe_allow_html=True)
 
-# all the quarters available for selection
+# all the years available for selection
 years = st.sidebar.select_slider(
     'Transaction year:',
     options=[
@@ -33,22 +55,14 @@ years = st.sidebar.select_slider(
     value=(2018,2020)
 )
 
-
-# vintage filter
-vintage = st.sidebar.select_slider(
-    'Construction vintage:',
-    options=['Pre-2000',2010,2015,'Post-2020'],
-    value=('Pre-2000','Post-2020')
-)
-
-# square footage filter
+# square footage slider
 sq_footage = st.sidebar.select_slider(
     'Home size (SF):',
-    options=['<1000',1000,2500,5000,'>5000'],
+    options=['<1000','1000','2500','5000','>5000'],
     value=('<1000','>5000')
 )
 
-# sub-geography filter
+# sub-geography slider
 geography_included = st.sidebar.radio(
     'Geography included:',
     ('Entire county','Sub-geography'),
@@ -61,46 +75,61 @@ if geography_included == 'Sub-geography':
         ['Cumming', 'North Forsyth', 'West Forsyth', 'South Forsyth'],
         ['Cumming'])
 
+im = Image.open('content/logo.png')
+col1, col2, col3 = st.sidebar.columns([1,1,1])
+col2.write("")
+col2.image(im, width=80)
+
 # sidebar variables ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 @st.cache_data
-def load_data():
+def load_tab_data():
+    # load the data
     df = pd.read_csv('Geocoded_Final_Joined.csv', thousands=',', keep_default_na=False)
 
+    # clean up the data
     df.rename(columns={
-        'Year  Built':'year_blt',
         'Year':'year_sale'
     }, inplace=True)
     df['GEOID'] = df['GEOID'].astype(str)
     df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
-    df = df[['Address', 'Square Ft', 'year_blt', 'Sale Date', 'year_sale', 'price_number','price_sf','GEOID','Sub_geo','unique_ID']]
+    df = df[['Square Ft', 'year_sale', 'price_sf','GEOID','Sub_geo','unique_ID']]
 
-    # read in geospatial
-    gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
+    # return this item
+    return df
 
-    # join together the 2, and let not man put asunder
-    joined_df = gdf.merge(df, left_on='GEOID', right_on='GEOID')
-    joined_df.rename(columns={
-        'Sub_geo_x':'Sub_geo',
-    }, inplace=True)
-    joined_df['Sale Date'] = pd.to_datetime(joined_df['Sale Date'])
-    joined_df = joined_df[['GEOID',
-                        #    'geometry',
-                           'Sale Date',
-                           'year_sale',
-                           'Square Ft',
-                           'year_blt',
-                           'price_number',
-                           'price_sf',
-                           'unique_ID',
-                           'Sub_geo'
-                           ]]
+def filter_data():
+    df = load_tab_data()
 
-    # return this
-    return joined_df
+    # year filter
+    if years[0] != years[1]:
+        filter_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+    else:
+        filter_df = df[df['year_sale'] == years[0]]
 
-df = load_data()
+    # home size filter
+    # if ((sq_footage[0] == '<1000') & (sq_footage[1] == '<1000')):
+    #     filtered_df = filtered_df[filtered_df['Square Ft'] < 1000]
+    # elif ((sq_footage[0] == '>5000') & (sq_footage[1] == '>5000')):
+    #     filtered_df = filtered_df[filtered_df['Square Ft'] > 5000]
+    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+    #     filtered_df = filtered_df[filtered_df['Square Ft'] <= sq_footage[1]]
+    # elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
+    #     filtered_df = filtered_df[filtered_df['Square Ft'] >= sq_footage[0]]
+    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+    #     filtered_df = filtered_df #i.e., don't apply a filter
+    # else:
+    #     filtered_df = filtered_df[(filtered_df['Square Ft'] >= sq_footage[0]) & (filtered_df['Square Ft'] <= sq_footage[1])]
+    if sq_footage[0] == sq_footage[1]:
+        st.error("Please select unique slider values for home size")
 
-st.dataframe(df)
+    return filter_df
+
+
+df = filter_data()
+
+st.dataframe(df, use_container_width=True)
+st.write(df.shape)
+st.write(f"first year: {years[0]}, second year: {years[1]}")
 
 
