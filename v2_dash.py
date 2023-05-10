@@ -78,13 +78,13 @@ if geography_included == 'Sub-geography':
         ['Cumming', 'North Forsyth', 'West Forsyth', 'South Forsyth'],
         ['Cumming'])
 
+# arc logo
 im = Image.open('content/logo.png')
 col1, col2, col3 = st.sidebar.columns([1,1,1])
 col2.write("")
 col2.image(im, width=80)
 
 # sidebar variables ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 @st.cache_data
 def load_tab_data():
     # load the data
@@ -136,10 +136,94 @@ def filter_data():
 
     return filtered_df, grouped_df
 
+# colors to be used in the mapping functions
+custom_colors = [
+    '#97a3ab',
+    '#667883',
+    '#37505d',
+    '#022b3a'
+    ]
 
-df = filter_data()[1]
+# convert the above hex list to RGB values
+custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h in custom_colors]
 
-st.dataframe(df, use_container_width=True)
-st.write(df.shape)
+def map_2D():
+
+    # tabular data
+    df = filter_data()[1]
+
+    # read in geospatial
+    gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
+
+    # join together the 2, and let not man put asunder
+    joined_df = gdf.merge(df, left_on='GEOID', right_on='GEOID')
+
+    # ensure we're working with a geodataframe
+    joined_df = gpd.GeoDataFrame(joined_df)
+
+    # format the column to show the price / SF
+    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.2f}".format((x)))
+
+    # # the 2 columns to be used in the tooltip, in addition to the CT
+    # tooltip_sf = joined_df['price_sf_formatted']
+    # tooltip_totalSales = joined_df['unique_ID']
+
+    # set choropleth color
+    joined_df['choro_color'] = pd.cut(
+            joined_df['price_sf'],
+            bins=len(custom_colors),
+            labels=custom_colors,
+            include_lowest=True,
+            duplicates='drop'
+            )
+    
+    # create map intitial state
+    initial_view_state = pdk.ViewState(
+        latitude=34.207054643497315,
+        longitude=-84.10535919531371, 
+        zoom=9.9, 
+        max_zoom=12, 
+        min_zoom=8,
+        pitch=0,
+        bearing=0,
+        height=590
+    )
+
+    geojson = pdk.Layer(
+        "GeoJsonLayer",
+        joined_df,
+        pickable=True,
+        autoHighlight=True,
+        highlight_color = [255, 255, 255, 80],
+        opacity=0.5,
+        stroked=True,
+        filled=True,
+        wireframe=True,
+        get_fill_color='choro_color',
+        get_line_color=[0, 0, 0, 255],
+        line_width_min_pixels=1
+    )
+
+    tooltip = {
+            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{unique_ID}</b>",
+            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica"},
+            }
+    
+    r = pdk.Deck(
+        layers=geojson,
+        initial_view_state=initial_view_state,
+        map_provider='mapbox',
+        map_style='light',
+        tooltip=tooltip)
+
+    return r
+
+
+
+
+st.dataframe(filter_data()[1], use_container_width=True)
+st.write(f"underlying data shape: {filter_data()[0].shape}")
+
+st.pydeck_chart(map_2D(), use_container_width=True)
 
 
