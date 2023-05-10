@@ -119,6 +119,10 @@ def filter_data():
     else:
         filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
+    # filter by sub-geography (if applicable)
+    if geography_included == 'Sub-geography':
+        filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
+
     return filtered_df
 
 
