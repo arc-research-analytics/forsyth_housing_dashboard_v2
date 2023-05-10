@@ -6,6 +6,7 @@ import plotly.express as px
 import pydeck as pdk
 from millify import millify
 from millify import prettify
+from datetime import date
 
 # customize
 st.set_page_config(
@@ -107,7 +108,7 @@ def load_tab_data():
     }, inplace=True)
     df['GEOID'] = df['GEOID'].astype(str)
     df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
-    df = df[['Square Ft', 'year_sale', 'year_blt','price_sf','GEOID','Sub_geo','unique_ID']]
+    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'Sale Date']]
 
     # return this item
     return df
@@ -255,6 +256,76 @@ def mapper():
 
     return r
 
+def charter():
+    # go read the dataaaaa
+    df = filter_data()[0]
+
+    # create columns extracting just the month and year from the 'Sale Date' column
+    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
+    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
+    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+
+    # group by 'year-month' to provide a monthly summary of the filtered sales
+    df_grouped = df.groupby('year-month').agg({
+        'price_sf':'median',
+        'month':pd.Series.mode,
+        'year':pd.Series.mode,
+        }).reset_index()
+
+    # sort the data so that it's chronological
+    df_grouped = df_grouped.sort_values(['year', 'month'])
+
+    fig = px.line(
+        df_grouped, 
+        x="year-month", 
+        y=df_grouped['price_sf'],
+        labels={
+            'year-month':'Time Period'
+            })
+      
+    # modify the line itself
+    fig.update_traces(
+        mode="lines",
+        line_color='#022B3A',
+        hovertemplate=None
+        )
+
+    # update the fig
+    fig.update_layout(
+        title_text='Monthly Price per SF', 
+        title_x=0.05, 
+        title_y=0.93,
+        title_font_color="#022B3A",
+        yaxis = dict(
+            title = None,
+            tickfont_color = '#022B3A',
+            tickfont_size = 14,
+            tickformat = '$.0f',
+            showgrid = False
+            ),
+        xaxis = dict(
+            linecolor = "#022B3A",
+            linewidth = 1,
+            tickfont_color = '#022B3A',
+            title = None,
+            tickformat = '%b %Y',
+            dtick = 'M3'
+            ),
+        height=530,
+        hovermode="x unified")
+
+    # add shifting vertical lines
+    year_start = {
+        2018:'2018-1',
+        2019:'2019-1',
+        2020:'2020-1',
+        2021:'2021-1',
+        2022:'2022-1'
+    }
+
+    return fig
+
+
 col1, col2, col3 = st.columns([2,0.2,2])
 map_view = col2.radio(
             'Map view:',
@@ -264,6 +335,9 @@ map_view = col2.radio(
 
 
 col1.pydeck_chart(mapper(), use_container_width=True)
+
+col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
+# col3.dataframe(charter())
 
 if map_view == '2D':
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
