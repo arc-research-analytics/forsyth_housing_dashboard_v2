@@ -58,6 +58,13 @@ years = st.sidebar.select_slider(
     value=(2018,2020)
 )
 
+# trends title 
+if years[0] != years[1]:
+    # st.markdown(f"<h2 style='color:#022B3A; display: inline'>Forsyth County Housing Trends |</h2><h2 style='color:#FF8966; display: inline'> {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
+else:
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} only</span></h2>", unsafe_allow_html=True)
+
 # square footage slider
 sq_footage = st.sidebar.select_slider(
     'Home size (SF):',
@@ -164,9 +171,9 @@ def map_2D():
     # format the column to show the price / SF
     joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.2f}".format((x)))
 
-    # # the 2 columns to be used in the tooltip, in addition to the CT
-    # tooltip_sf = joined_df['price_sf_formatted']
-    # tooltip_totalSales = joined_df['unique_ID']
+    # add 1,000 separator to column that will show total sales
+    joined_df['total_sales'] = joined_df['unique_ID'].apply(lambda x: '{:,}'.format(x))
+
 
     # set choropleth color
     joined_df['choro_color'] = pd.cut(
@@ -205,8 +212,8 @@ def map_2D():
     )
 
     tooltip = {
-            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{unique_ID}</b>",
-            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica"},
+            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
+            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica", "text-align": "center"},
             }
     
     r = pdk.Deck(
@@ -219,10 +226,6 @@ def map_2D():
     return r
 
 
-
-
-st.dataframe(filter_data()[1], use_container_width=True)
-st.write(f"underlying data shape: {filter_data()[0].shape}")
 
 st.pydeck_chart(map_2D(), use_container_width=True)
 
