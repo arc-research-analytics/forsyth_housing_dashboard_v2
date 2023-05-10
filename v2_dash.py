@@ -29,8 +29,7 @@ hide_default_format = """
                 background-color: #022B3A 
                 }
             div[data-testid="metric-container"] {
-
-                text-align: center;
+                text-align: left;
                 color: #022B3A;
                 }
             div.stActionButton{visibility: hidden;}
