@@ -188,7 +188,7 @@ def map_2D():
     initial_view_state = pdk.ViewState(
         latitude=34.207054643497315,
         longitude=-84.10535919531371, 
-        zoom=9.9, 
+        zoom=9.6, 
         max_zoom=12, 
         min_zoom=8,
         pitch=0,
@@ -220,13 +220,14 @@ def map_2D():
         layers=geojson,
         initial_view_state=initial_view_state,
         map_provider='mapbox',
-        map_style='light',
+        map_style='road',
         tooltip=tooltip)
 
     return r
 
 
-
-st.pydeck_chart(map_2D(), use_container_width=True)
+col1, col2, col3 = st.columns([2,0.2,2])
+col1.pydeck_chart(map_2D(), use_container_width=True)
+col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
 
 
