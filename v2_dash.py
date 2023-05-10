@@ -58,7 +58,7 @@ years = st.sidebar.select_slider(
 # square footage slider
 sq_footage = st.sidebar.select_slider(
     'Home size (SF):',
-    options=['<1000','1000','2500','5000','>5000'],
+    options=['<1000',1000,2500,5000,'>5000'],
     value=('<1000','>5000')
 )
 
@@ -103,27 +103,23 @@ def filter_data():
 
     # year filter
     if years[0] != years[1]:
-        filter_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
     else:
-        filter_df = df[df['year_sale'] == years[0]]
+        filtered_df = df[df['year_sale'] == years[0]]
 
     # home size filter
-    # if ((sq_footage[0] == '<1000') & (sq_footage[1] == '<1000')):
-    #     filtered_df = filtered_df[filtered_df['Square Ft'] < 1000]
-    # elif ((sq_footage[0] == '>5000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = filtered_df[filtered_df['Square Ft'] > 5000]
-    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-    #     filtered_df = filtered_df[filtered_df['Square Ft'] <= sq_footage[1]]
-    # elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = filtered_df[filtered_df['Square Ft'] >= sq_footage[0]]
-    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = filtered_df #i.e., don't apply a filter
-    # else:
-    #     filtered_df = filtered_df[(filtered_df['Square Ft'] >= sq_footage[0]) & (filtered_df['Square Ft'] <= sq_footage[1])]
     if sq_footage[0] == sq_footage[1]:
-        st.error("Please select unique slider values for home size")
+        st.error("Please select unique slider values for home size.")
+    elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+        filtered_df = df[df['Square Ft'] <= sq_footage[1]]
+    elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
+        filtered_df = df[df['Square Ft'] >= sq_footage[0]]
+    elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+        filtered_df = filtered_df #i.e., don't apply a filter
+    else:
+        filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
-    return filter_df
+    return filtered_df
 
 
 df = filter_data()
