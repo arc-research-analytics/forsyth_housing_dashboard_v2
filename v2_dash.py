@@ -26,18 +26,12 @@ hide_default_format = """
                 padding-right: 20px;
                 padding-top: 10px;}
             span[data-baseweb="tag"] {
-                background-color: #022B3A !important;
+                background-color: #022B3A 
                 }
-            [data-testid="stMetricValue"] {
-                color: #FF8966;
-                font-size: 30px;
-                font-weight:500;
+            div[data-testid="metric-container"] {
+
                 text-align: center;
-                }
-            [data-testid="stMetricLabel"] {
                 color: #022B3A;
-                font-weight:900;
-                text-align: center;
                 }
             div.stActionButton{visibility: hidden;}
         </style>
@@ -48,6 +42,7 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 # sidebar variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 st.sidebar.markdown(f"<h3 style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</h3>", unsafe_allow_html=True)
+st.sidebar.write("")
 
 # all the years available for selection
 years = st.sidebar.select_slider(
@@ -92,6 +87,10 @@ if geography_included == 'Sub-geography':
 # arc logo
 im = Image.open('content/logo.png')
 col1, col2, col3 = st.sidebar.columns([1,1,1])
+col2.write("")
+col2.write("")
+col2.write("")
+col2.write("")
 col2.write("")
 col2.image(im, width=80)
 
@@ -199,7 +198,7 @@ def mapper():
             min_zoom=8,
             pitch=0,
             bearing=0,
-            height=590
+            height=560
             )
         geojson = pdk.Layer(
             "GeoJsonLayer",
@@ -223,7 +222,7 @@ def mapper():
             min_zoom=8,
             pitch=45,
             bearing=0,
-            height=590
+            height=560
             )
         geojson = pdk.Layer(
         "GeoJsonLayer",
@@ -336,8 +335,24 @@ map_view = col2.radio(
 
 col1.pydeck_chart(mapper(), use_container_width=True)
 
+# kpi's
+df_metric = filter_data()[0]
+
+with col3:
+    subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
+    subcol1.metric("median home price:", 65)
+    subcol2.metric("total sales:", "5,000")
+    subcol3.metric("median vintage:", 2017)
+
+
+
+
+# line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
-# col3.dataframe(charter())
+
+
+
+
 
 if map_view == '2D':
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
