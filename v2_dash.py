@@ -119,7 +119,6 @@ def load_tab_data():
 
 df_init = load_tab_data()
 
-
 def filter_data():
     df = df_init
 
