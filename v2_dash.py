@@ -311,7 +311,7 @@ def charter():
 
     fig = px.line(
         df_grouped, 
-        x="year-month", 
+        x="year-month",
         y=df_grouped['price_sf'],
         labels={
             'year-month':'Time Period'
@@ -371,10 +371,11 @@ col1.pydeck_chart(mapper(), use_container_width=True)
 # col1.write("map goes here")
 
 # kpi's
+median_value = '${:,.0f}'.format(filter_data()[0]['price_sf'].median())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
-    subcol1.metric("median home price:", 65)
+    subcol1.metric("Median home price:", median_value)
     subcol2.metric("total sales:", "5,000")
     subcol3.metric("median vintage:", 2017)
 
