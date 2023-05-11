@@ -111,10 +111,9 @@ def load_tab_data():
     # return this item
     return df
 
-init_df = load_tab_data()
 
 # filter the data
-df = init_df
+df = load_tab_data()
 
 # year filter
 if years[0] != years[1]:
@@ -130,7 +129,7 @@ elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
 elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
 elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-    filtered_df = filtered_df #i.e., don't apply a filter
+    filtered_df = df #i.e., don't apply a filter
 else:
     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
