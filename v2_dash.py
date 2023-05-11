@@ -340,13 +340,16 @@ def charter():
 
 
 col1, col2, col3 = st.columns([2,0.2,2])
+
 map_view = col2.radio(
             'Map view:',
             ('2D', '3D'),
-            index=0
+            index=0,
+            horizontal=True
             )
 
 col1.pydeck_chart(mapper(), use_container_width=True)
+
 
 # kpi's
 median_value = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
@@ -368,3 +371,7 @@ if map_view == '2D':
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
 else:
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Shift + click to change map pitch & angle. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Greater sales volume represented by 'taller' census tracts.</span>", unsafe_allow_html=True)
+
+with col1:
+    expander = st.expander("Disclaimers")
+    expander.markdown("<span style='color:#022B3A'> Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on March 7, 2023.</span>", unsafe_allow_html=True)
