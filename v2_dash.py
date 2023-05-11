@@ -262,6 +262,17 @@ def charter():
     # test chart
     df = filter_data()[0]
 
+    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
+    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
+    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+
+    # df_grouped = df.groupby('year-month').agg({
+    #     'price_sf':'median',
+    #     'month':pd.Series.mode,
+    #     'year':pd.Series.mode,
+    #     }).reset_index()
+    
+
     fig = px.line(
         df, 
         x="Sale Date",
