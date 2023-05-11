@@ -17,7 +17,7 @@ st.set_page_config(
 hide_default_format = """
         <style>
             .reportview-container .main footer {visibility: hidden;}    
-            #MainMenu, footer {visibility: hidden;}
+            #MainMenu, footer, header {visibility: hidden;}
             section.main > div:has(~ footer ) {
                 padding-bottom: 1px;
                 padding-left: 20px;
