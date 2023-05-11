@@ -4,8 +4,6 @@ import pandas as pd
 import geopandas as gpd
 import plotly.express as px
 import pydeck as pdk
-from millify import millify
-from millify import prettify
 from datetime import date
 
 # customize
@@ -58,7 +56,6 @@ years = st.sidebar.select_slider(
 
 # trends title 
 if years[0] != years[1]:
-    # st.markdown(f"<h2 style='color:#022B3A; display: inline'>Forsyth County Housing Trends |</h2><h2 style='color:#FF8966; display: inline'> {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
     st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
 else:
     st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} only</h2>", unsafe_allow_html=True)
@@ -123,12 +120,6 @@ df_init = load_tab_data()
 def filter_data():
     df = df_init
 
-    # year filter
-    if years[0] != years[1]:
-        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-    else:
-        filtered_df = df[df['year_sale'] == years[0]]
-
     # home size filter
     if sq_footage[0] == sq_footage[1]:
         st.error("Please select unique slider values for home size.")
@@ -144,6 +135,12 @@ def filter_data():
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
         filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
+
+    # year filter
+    if years[0] != years[1]:
+        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+    else:
+        filtered_df = df[df['year_sale'] == years[0]]
 
     # now group by GEOID
     grouped_df = filtered_df.groupby('GEOID').agg({
@@ -285,74 +282,47 @@ def charter():
         labels={
             'year-month':'Time Period'
             })
-
-
-
-    # # go read the dataaaaa
-    # df = filter_data()[0]
-
-    # # create columns extracting just the month and year from the 'Sale Date' column
-    # df['year'] = pd.DatetimeIndex(df['Sale Date']).year
-    # df['month'] = pd.DatetimeIndex(df['Sale Date']).month
-    # df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
-
-    # # group by 'year-month' to provide a monthly summary of the filtered sales
-    # df_grouped = df.groupby('year-month').agg({
-    #     'price_sf':'median',
-    #     'month':pd.Series.mode,
-    #     'year':pd.Series.mode,
-    #     }).reset_index()
-
-    # # sort the data so that it's chronological
-    # df_grouped = df_grouped.sort_values(['year', 'month'])
-
-    # fig = px.line(
-    #     df_grouped, 
-    #     x="year-month",
-    #     y=df_grouped['price_sf'],
-    #     labels={
-    #         'year-month':'Time Period'
-    #         })
       
-    # # modify the line itself
-    # fig.update_traces(
-    #     mode="lines",
-    #     line_color='#022B3A',
-    #     hovertemplate=None
-    #     )
+    # modify the line itself
+    fig.update_traces(
+        mode="lines",
+        line_color='#FFFFFF',
+        hovertemplate=None
+        )
 
-    # # update the fig
-    # fig.update_layout(
-    #     title_text='Monthly Price per SF', 
-    #     title_x=0.05, 
-    #     title_y=0.93,
-    #     title_font_color="#FFFFFF",
-    #     yaxis = dict(
-    #         title = None,
-    #         tickfont_color = '#022B3A',
-    #         tickfont_size = 14,
-    #         tickformat = '$.0f',
-    #         showgrid = False
-    #         ),
-    #     xaxis = dict(
-    #         linecolor = "#022B3A",
-    #         linewidth = 1,
-    #         tickfont_color = '#022B3A',
-    #         title = None,
-    #         tickformat = '%b %Y',
-    #         dtick = 'M3'
-    #         ),
-    #     height=530,
-    #     hovermode="x unified")
+    # update the fig
+    fig.update_layout(
+        title_text='Monthly Price per SF', 
+        title_x=0.05, 
+        title_y=0.93,
+        title_font_color="#FFFFFF",
+        yaxis = dict(
+            linecolor = "#022B3A",
+            title = None,
+            tickfont_color = '#022B3A',
+            tickfont_size = 14,
+            tickformat = '$.0f',
+            showgrid = False
+            ),
+        xaxis = dict(
+            linecolor = "#022B3A",
+            linewidth = 1,
+            tickfont_color = '#022B3A',
+            title = None,
+            tickformat = '%b %Y',
+            dtick = 'M3'
+            ),
+        height=530,
+        hovermode="x unified")
 
-    # # add shifting vertical lines
-    # year_start = {
-    #     2018:'2018-1',
-    #     2019:'2019-1',
-    #     2020:'2020-1',
-    #     2021:'2021-1',
-    #     2022:'2022-1'
-    # }
+    # add shifting vertical lines
+    year_start = {
+        2018:'2018-1',
+        2019:'2019-1',
+        2020:'2020-1',
+        2021:'2021-1',
+        2022:'2022-1'
+    }
 
     return fig
 
@@ -370,12 +340,13 @@ col1.pydeck_chart(mapper(), use_container_width=True)
 # kpi's
 median_value = '${:,.0f}'.format(filter_data()[0]['price_sf'].median())
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
+med_vintage = '{:.0f}'.format(filter_data()[0]['year_blt'].median())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
     subcol1.metric("Median home price:", median_value)
     subcol2.metric("Total sales:", total_sales)
-    subcol3.metric("median vintage:", 2017)
+    subcol3.metric("Median vintage:", med_vintage)
 
 
 # line chart
