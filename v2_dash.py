@@ -17,7 +17,7 @@ st.set_page_config(
 hide_default_format = """
         <style>
             .reportview-container .main footer {visibility: hidden;}    
-            #MainMenu, footer, header {visibility: hidden;}
+            #MainMenu, footer {visibility: hidden;}
             section.main > div:has(~ footer ) {
                 padding-bottom: 1px;
                 padding-left: 20px;
@@ -82,6 +82,7 @@ if geography_included == 'Sub-geography':
         'Select one or more regions:',
         ['Cumming', 'North Forsyth', 'West Forsyth', 'South Forsyth'],
         ['Cumming'])
+    
 
 # arc logo
 im = Image.open('content/logo.png')
@@ -205,7 +206,7 @@ def mapper():
             min_zoom=8,
             pitch=0,
             bearing=0,
-            height=560
+            height=540
             )
         geojson = pdk.Layer(
             "GeoJsonLayer",
@@ -229,7 +230,7 @@ def mapper():
             min_zoom=8,
             pitch=45,
             bearing=0,
-            height=560
+            height=540
             )
         geojson = pdk.Layer(
         "GeoJsonLayer",
@@ -313,7 +314,7 @@ def charter():
             tickformat = '%b %Y',
             dtick = 'M3'
             ),
-        height=530,
+        height=510,
         hovermode="x unified")
 
     # add shifting vertical lines
@@ -339,13 +340,15 @@ def charter():
     return fig
 
 
-col1, col2, col3 = st.columns([2,0.2,2])
+col1, col2, col3 = st.columns([1.75,0.3,2])
+
+col2.write("")
 
 map_view = col2.radio(
             'Map view:',
             ('2D', '3D'),
             index=0,
-            horizontal=True
+            horizontal=False
             )
 
 col1.pydeck_chart(mapper(), use_container_width=True)
@@ -374,4 +377,4 @@ else:
 
 with col1:
     expander = st.expander("Disclaimers")
-    expander.markdown("<span style='color:#022B3A'> Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on March 7, 2023.</span>", unsafe_allow_html=True)
+    expander.markdown("<span style='color:#022B3A'> Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
