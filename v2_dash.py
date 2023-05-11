@@ -111,8 +111,11 @@ def load_tab_data():
     # return this item
     return df
 
+df_init = load_tab_data()
+
+
 def filter_data():
-    df = load_tab_data()
+    df = df_init
 
     # year filter
     if years[0] != years[1]:
@@ -293,7 +296,7 @@ def charter():
         title_text='Monthly Price per SF', 
         title_x=0.05, 
         title_y=0.93,
-        title_font_color="#022B3A",
+        title_font_color="#FFFFFF",
         yaxis = dict(
             title = None,
             tickfont_color = '#022B3A',
