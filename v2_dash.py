@@ -113,38 +113,6 @@ def load_tab_data():
 
 df_init = load_tab_data()
 
-# # filter the data
-# df = load_tab_data()
-
-# # year filter
-# if years[0] != years[1]:
-#     filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-# else:
-#     filtered_df = df[df['year_sale'] == years[0]]
-
-# # home size filter
-# if sq_footage[0] == sq_footage[1]:
-#     st.error("Please select unique slider values for home size.")
-# elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-#     filtered_df = df[df['Square Ft'] <= sq_footage[1]]
-# elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-#     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
-# elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-#     filtered_df = df #i.e., don't apply a filter
-# else:
-#     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
-
-# # filter by sub-geography (if applicable)
-# if geography_included == 'Sub-geography':
-#     filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
-
-# # now group by GEOID
-# grouped_df = filtered_df.groupby('GEOID').agg({
-#     'price_sf':'median',
-#     'year_blt':'median',
-#     'unique_ID':'count',
-#     }).reset_index()
-
 
 def filter_data():
     df = df_init
@@ -291,71 +259,84 @@ def mapper():
     return r
 
 def charter():
-    # go read the dataaaaa
+    # test chart
     df = filter_data()[0]
 
-    # create columns extracting just the month and year from the 'Sale Date' column
-    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
-    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
-    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
-
-    # group by 'year-month' to provide a monthly summary of the filtered sales
-    df_grouped = df.groupby('year-month').agg({
-        'price_sf':'median',
-        'month':pd.Series.mode,
-        'year':pd.Series.mode,
-        }).reset_index()
-
-    # sort the data so that it's chronological
-    df_grouped = df_grouped.sort_values(['year', 'month'])
-
     fig = px.line(
-        df_grouped, 
-        x="year-month",
-        y=df_grouped['price_sf'],
+        df, 
+        x="Sale Date",
+        y=df['price_sf'],
         labels={
             'year-month':'Time Period'
             })
+
+
+
+    # # go read the dataaaaa
+    # df = filter_data()[0]
+
+    # # create columns extracting just the month and year from the 'Sale Date' column
+    # df['year'] = pd.DatetimeIndex(df['Sale Date']).year
+    # df['month'] = pd.DatetimeIndex(df['Sale Date']).month
+    # df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+
+    # # group by 'year-month' to provide a monthly summary of the filtered sales
+    # df_grouped = df.groupby('year-month').agg({
+    #     'price_sf':'median',
+    #     'month':pd.Series.mode,
+    #     'year':pd.Series.mode,
+    #     }).reset_index()
+
+    # # sort the data so that it's chronological
+    # df_grouped = df_grouped.sort_values(['year', 'month'])
+
+    # fig = px.line(
+    #     df_grouped, 
+    #     x="year-month",
+    #     y=df_grouped['price_sf'],
+    #     labels={
+    #         'year-month':'Time Period'
+    #         })
       
-    # modify the line itself
-    fig.update_traces(
-        mode="lines",
-        line_color='#022B3A',
-        hovertemplate=None
-        )
+    # # modify the line itself
+    # fig.update_traces(
+    #     mode="lines",
+    #     line_color='#022B3A',
+    #     hovertemplate=None
+    #     )
 
-    # update the fig
-    fig.update_layout(
-        title_text='Monthly Price per SF', 
-        title_x=0.05, 
-        title_y=0.93,
-        title_font_color="#FFFFFF",
-        yaxis = dict(
-            title = None,
-            tickfont_color = '#022B3A',
-            tickfont_size = 14,
-            tickformat = '$.0f',
-            showgrid = False
-            ),
-        xaxis = dict(
-            linecolor = "#022B3A",
-            linewidth = 1,
-            tickfont_color = '#022B3A',
-            title = None,
-            tickformat = '%b %Y',
-            dtick = 'M3'
-            ),
-        height=530,
-        hovermode="x unified")
+    # # update the fig
+    # fig.update_layout(
+    #     title_text='Monthly Price per SF', 
+    #     title_x=0.05, 
+    #     title_y=0.93,
+    #     title_font_color="#FFFFFF",
+    #     yaxis = dict(
+    #         title = None,
+    #         tickfont_color = '#022B3A',
+    #         tickfont_size = 14,
+    #         tickformat = '$.0f',
+    #         showgrid = False
+    #         ),
+    #     xaxis = dict(
+    #         linecolor = "#022B3A",
+    #         linewidth = 1,
+    #         tickfont_color = '#022B3A',
+    #         title = None,
+    #         tickformat = '%b %Y',
+    #         dtick = 'M3'
+    #         ),
+    #     height=530,
+    #     hovermode="x unified")
 
-    # add shifting vertical lines
-    year_start = {
-        2018:'2018-1',
-        2019:'2019-1',
-        2020:'2020-1',
-        2021:'2021-1',
-        2022:'2022-1'
-    }
+    # # add shifting vertical lines
+    # year_start = {
+    #     2018:'2018-1',
+    #     2019:'2019-1',
+    #     2020:'2020-1',
+    #     2021:'2021-1',
+    #     2022:'2022-1'
+    # }
 
     return fig
 
