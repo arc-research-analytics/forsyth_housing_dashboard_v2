@@ -366,9 +366,6 @@ with col3:
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
 
 
-
-
-
 if map_view == '2D':
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
 else:
