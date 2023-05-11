@@ -106,7 +106,13 @@ def load_tab_data():
     }, inplace=True)
     df['GEOID'] = df['GEOID'].astype(str)
     df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
-    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'Sale Date']]
+
+    # get the columns to be used by charter
+    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
+    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
+    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+
+    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month']]
 
     # return this item
     return df
@@ -262,9 +268,7 @@ def charter():
     # test chart
     df = filter_data()[0]
 
-    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
-    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
-    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+    
 
     # df_grouped = df.groupby('year-month').agg({
     #     'price_sf':'median',
@@ -275,7 +279,7 @@ def charter():
 
     fig = px.line(
         df, 
-        x="Sale Date",
+        x="year-month",
         y=df['price_sf'],
         labels={
             'year-month':'Time Period'
@@ -364,11 +368,12 @@ col1.pydeck_chart(mapper(), use_container_width=True)
 
 # kpi's
 median_value = '${:,.0f}'.format(filter_data()[0]['price_sf'].median())
+total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
     subcol1.metric("Median home price:", median_value)
-    subcol2.metric("total sales:", "5,000")
+    subcol2.metric("Total sales:", total_sales)
     subcol3.metric("median vintage:", 2017)
 
 
