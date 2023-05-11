@@ -357,7 +357,7 @@ med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
-    subcol1.metric("Median home price", median_value)
+    subcol1.metric("Median price / SF", median_value)
     subcol2.metric("Total sales", total_sales)
     subcol3.metric("Median vintage", med_vintage)
 
