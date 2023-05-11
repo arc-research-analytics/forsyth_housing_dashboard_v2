@@ -30,6 +30,9 @@ hide_default_format = """
                 text-align: left;
                 color: #022B3A;
                 }
+            [data-testid="stMetricLabel"] {
+                color: #022B3A;
+                }
             div.stActionButton{visibility: hidden;}
         </style>
        """
@@ -56,9 +59,9 @@ years = st.sidebar.select_slider(
 
 # trends title 
 if years[0] != years[1]:
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} - {years[1]}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
 else:
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | {years[0]} only</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} only</span></h2>", unsafe_allow_html=True)
 
 # square footage slider
 sq_footage = st.sidebar.select_slider(
