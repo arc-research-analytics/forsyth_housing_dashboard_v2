@@ -120,21 +120,15 @@ df_init = load_tab_data()
 def filter_data():
     df = df_init
 
-    # year filter
-    if years[0] != years[1]:
-        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-    else:
-        filtered_df = df[df['year_sale'] == years[0]]
-
     # home size filter
-    if sq_footage[0] == sq_footage[1]:
-        st.error("Please select unique slider values for home size.")
-    elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+    if ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
         filtered_df = df[df['Square Ft'] <= sq_footage[1]]
     elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
         filtered_df = df[df['Square Ft'] >= sq_footage[0]]
     elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-        filtered_df = filtered_df #i.e., don't apply a filter
+        filtered_df = df #i.e., don't apply a filter
+    elif sq_footage[0] == sq_footage[1]:
+        st.error("Please select unique slider values for home size.")
     else:
         filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
@@ -142,14 +136,20 @@ def filter_data():
     if geography_included == 'Sub-geography':
         filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
 
+    # year filter
+    if years[0] != years[1]:
+        filtered_df_map_KPI = filtered_df[(filtered_df['year_sale'] >= years[0]) & (filtered_df['year_sale'] <= years[1])]
+    else:
+        filtered_df_map_KPI = filtered_df[filtered_df['year_sale'] == years[0]]
+
     # now group by GEOID
-    grouped_df = filtered_df.groupby('GEOID').agg({
+    grouped_df = filtered_df_map_KPI.groupby('GEOID').agg({
         'price_sf':'median',
         'year_blt':'median',
         'unique_ID':'count',
         }).reset_index()
 
-    return filtered_df, grouped_df
+    return filtered_df, grouped_df, filtered_df_map_KPI
 
 
 # colors to be used in the mapping functions
@@ -271,7 +271,7 @@ def charter():
         'year':pd.Series.mode,
         }).reset_index()
     
-    # # sort the data so that it's chronological
+    # sort the data so that it's chronological
     df_grouped = df_grouped.sort_values(['year', 'month'])
     
 
@@ -286,7 +286,7 @@ def charter():
     # modify the line itself
     fig.update_traces(
         mode="lines",
-        line_color='#FF8966',
+        line_color='#022B3A',
         hovertemplate=None
         )
 
@@ -324,6 +324,17 @@ def charter():
         2022:'2022-1'
     }
 
+    year_end = {
+        2018:'2018-12',
+        2019:'2019-12',
+        2020:'2020-12',
+        2021:'2021-12',
+        2022:'2022-12'
+    }
+
+    fig.add_vline(x=year_start[years[0]], line_width=2, line_dash="dash", line_color="#FF8966")
+    fig.add_vline(x=year_end[years[1]], line_width=2, line_dash="dash", line_color="#FF8966")
+
     return fig
 
 
@@ -335,12 +346,11 @@ map_view = col2.radio(
             )
 
 col1.pydeck_chart(mapper(), use_container_width=True)
-# col1.write("map goes here")
 
 # kpi's
-median_value = '${:,.0f}'.format(filter_data()[0]['price_sf'].median())
+median_value = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
-med_vintage = '{:.0f}'.format(filter_data()[0]['year_blt'].median())
+med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
