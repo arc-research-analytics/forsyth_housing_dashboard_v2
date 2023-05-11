@@ -120,6 +120,12 @@ df_init = load_tab_data()
 def filter_data():
     df = df_init
 
+    # year filter
+    if years[0] != years[1]:
+        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+    else:
+        filtered_df = df[df['year_sale'] == years[0]]
+
     # home size filter
     if sq_footage[0] == sq_footage[1]:
         st.error("Please select unique slider values for home size.")
@@ -135,12 +141,6 @@ def filter_data():
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
         filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
-
-    # year filter
-    if years[0] != years[1]:
-        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-    else:
-        filtered_df = df[df['year_sale'] == years[0]]
 
     # now group by GEOID
     grouped_df = filtered_df.groupby('GEOID').agg({
@@ -286,7 +286,7 @@ def charter():
     # modify the line itself
     fig.update_traces(
         mode="lines",
-        line_color='#FFFFFF',
+        line_color='#FF8966',
         hovertemplate=None
         )
 
