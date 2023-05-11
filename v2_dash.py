@@ -154,7 +154,6 @@ def filter_data():
 
     return filtered_df, grouped_df, filtered_df_map_KPI
 
-
 # colors to be used in the mapping functions
 custom_colors = [
     '#97a3ab',
