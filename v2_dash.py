@@ -111,11 +111,8 @@ def load_tab_data():
     # return this item
     return df
 
-df_init = load_tab_data()
-
-
 def filter_data():
-    df = df_init
+    df = load_tab_data()
 
     # year filter
     if years[0] != years[1]:
