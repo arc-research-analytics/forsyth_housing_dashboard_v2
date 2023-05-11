@@ -370,8 +370,3 @@ if map_view == '2D':
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
 else:
     col1.markdown("<span style='color: #022B3A'><b>Note:</b> Shift + click to change map pitch & angle. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Greater sales volume represented by 'taller' census tracts.</span>", unsafe_allow_html=True)
-
-
-
-
-
