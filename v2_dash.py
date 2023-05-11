@@ -165,7 +165,7 @@ custom_colors = [
 # convert the above hex list to RGB values
 custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h in custom_colors]
 
-def mapper():
+def mapper_2D():
 
     # tabular data
     df = filter_data()[1]
@@ -195,59 +195,105 @@ def mapper():
             duplicates='drop'
             )
 
-    if map_view == '2D':
-
-        # create map intitial state
-        initial_view_state = pdk.ViewState(
-            latitude=34.207054643497315,
-            longitude=-84.10535919531371, 
-            zoom=9.6, 
-            max_zoom=12, 
-            min_zoom=8,
-            pitch=0,
-            bearing=0,
-            height=540
-            )
-        geojson = pdk.Layer(
-            "GeoJsonLayer",
-            joined_df,
-            pickable=True,
-            autoHighlight=True,
-            highlight_color = [255, 255, 255, 80],
-            opacity=0.5,
-            stroked=True,
-            filled=True,
-            get_fill_color='choro_color',
-            get_line_color=[0, 0, 0, 255],
-            line_width_min_pixels=1
+    # create map intitial state
+    initial_view_state = pdk.ViewState(
+        latitude=34.207054643497315,
+        longitude=-84.10535919531371, 
+        zoom=9.6, 
+        max_zoom=12, 
+        min_zoom=8,
+        pitch=0,
+        bearing=0,
+        height=540
         )
-    else:
-        initial_view_state = pdk.ViewState(
-            latitude=34.307054643497315,
-            longitude=-84.10535919531371, 
-            zoom=9.2, 
-            max_zoom=12, 
-            min_zoom=8,
-            pitch=45,
-            bearing=0,
-            height=540
-            )
-        geojson = pdk.Layer(
+    geojson = pdk.Layer(
         "GeoJsonLayer",
         joined_df,
         pickable=True,
         autoHighlight=True,
-        highlight_color = [255, 255, 255, 90],
+        highlight_color = [255, 255, 255, 80],
         opacity=0.5,
-        stroked=False,
+        stroked=True,
         filled=True,
-        wireframe=False,
-        extruded=True,
-        get_elevation='unique_ID * 50',
         get_fill_color='choro_color',
-        get_line_color='choro_color',
+        get_line_color=[0, 0, 0, 255],
         line_width_min_pixels=1
+    )
+    
+
+    tooltip = {
+            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
+            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica", "text-align": "center"},
+            }
+    
+    r = pdk.Deck(
+        layers=geojson,
+        initial_view_state=initial_view_state,
+        map_provider='mapbox',
+        map_style='road',
+        tooltip=tooltip)
+
+    return r
+
+def mapper_3D():
+
+    # tabular data
+    df = filter_data()[1]
+
+    # read in geospatial
+    gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
+
+    # join together the 2, and let not man put asunder
+    joined_df = gdf.merge(df, left_on='GEOID', right_on='GEOID')
+
+    # ensure we're working with a geodataframe
+    joined_df = gpd.GeoDataFrame(joined_df)
+
+    # format the column to show the price / SF
+    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.2f}".format((x)))
+
+    # add 1,000 separator to column that will show total sales
+    joined_df['total_sales'] = joined_df['unique_ID'].apply(lambda x: '{:,}'.format(x))
+
+
+    # set choropleth color
+    joined_df['choro_color'] = pd.cut(
+            joined_df['price_sf'],
+            bins=len(custom_colors),
+            labels=custom_colors,
+            include_lowest=True,
+            duplicates='drop'
+            )
+
+    # set initial view state
+    initial_view_state = pdk.ViewState(
+        latitude=34.307054643497315,
+        longitude=-84.10535919531371, 
+        zoom=9.2, 
+        max_zoom=12, 
+        min_zoom=8,
+        pitch=45,
+        bearing=0,
+        height=540
         )
+    
+    # create geojson layer
+    geojson = pdk.Layer(
+    "GeoJsonLayer",
+    joined_df,
+    pickable=True,
+    autoHighlight=True,
+    highlight_color = [255, 255, 255, 90],
+    opacity=0.5,
+    stroked=False,
+    filled=True,
+    wireframe=False,
+    extruded=True,
+    get_elevation='unique_ID * 50',
+    get_fill_color='choro_color',
+    get_line_color='choro_color',
+    line_width_min_pixels=1
+    )
 
     tooltip = {
             "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
@@ -339,19 +385,28 @@ def charter():
 
     return fig
 
-
+# define columns
 col1, col2, col3 = st.columns([1.75,0.3,2])
 
+# give spacing just above the "map view" radio button, to the right of the map
+col2.write("")
 col2.write("")
 
-map_view = col2.radio(
-            'Map view:',
-            ('2D', '3D'),
-            index=0,
-            horizontal=False
-            )
 
-col1.pydeck_chart(mapper(), use_container_width=True)
+map_view = col2.radio(
+        'Map view:',
+        ('2D', '3D'),
+        index=0,
+        horizontal=False,
+        help='Toggle option to see extruded polygons based on total sales in each Census tract.'
+        )
+
+if map_view == '2D':
+    col1.pydeck_chart(mapper_2D(), use_container_width=True)
+else:
+    col1.pydeck_chart(mapper_3D(), use_container_width=True)
+
+
 
 
 # kpi's
@@ -370,11 +425,12 @@ with col3:
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
 
 
-if map_view == '2D':
-    col1.markdown("<span style='color: #022B3A'><b>Note:</b> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.</span>", unsafe_allow_html=True)
-else:
-    col1.markdown("<span style='color: #022B3A'><b>Note:</b> Shift + click to change map pitch & angle. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Greater sales volume represented by 'taller' census tracts.</span>", unsafe_allow_html=True)
 
-with col1:
-    expander = st.expander("Disclaimers")
-    expander.markdown("<span style='color:#022B3A'> Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
+if map_view == '2D':
+    with col1:
+        expander = st.expander("Note")
+        expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
+else:
+    with col1:
+        expander = st.expander("Note")
+        expander.markdown("<span style='color:#022B3A'>Shift + click to change map pitch & angle. Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
