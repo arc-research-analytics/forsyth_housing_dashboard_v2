@@ -292,10 +292,10 @@ def charter():
 
     # update the fig
     fig.update_layout(
-        title_text='Monthly Price per SF', 
+        title_text='<span style="font-size: 18px;">Median Sales Price / SF per Month</span> <br> <span style="font-size: 14px;">Orange vertical lines show range of selected years</span>', 
         title_x=0.05, 
         title_y=0.93,
-        title_font_color="#FFFFFF",
+        title_font_color="#022B3A",
         yaxis = dict(
             linecolor = "#022B3A",
             title = None,
@@ -354,9 +354,9 @@ med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
-    subcol1.metric("Median home price:", median_value)
-    subcol2.metric("Total sales:", total_sales)
-    subcol3.metric("Median vintage:", med_vintage)
+    subcol1.metric("Median home price", median_value)
+    subcol2.metric("Total sales", total_sales)
+    subcol3.metric("Median vintage", med_vintage)
 
 
 # line chart
