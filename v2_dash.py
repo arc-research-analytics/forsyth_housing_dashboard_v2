@@ -145,6 +145,9 @@ def filter_data():
 
     return filtered_df, grouped_df
 
+filtered_df = filter_data()[0]
+grouped_df = filter_data()[1]
+
 # colors to be used in the mapping functions
 custom_colors = [
     '#97a3ab',
@@ -159,7 +162,7 @@ custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h i
 def mapper():
 
     # tabular data
-    df = filter_data()[1]
+    df = grouped_df
 
     # read in geospatial
     gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
@@ -256,7 +259,7 @@ def mapper():
 
 def charter():
     # go read the dataaaaa
-    df = filter_data()[0]
+    df = filtered_df
 
     # create columns extracting just the month and year from the 'Sale Date' column
     df['year'] = pd.DatetimeIndex(df['Sale Date']).year
