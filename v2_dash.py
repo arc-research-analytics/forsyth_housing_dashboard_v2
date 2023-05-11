@@ -111,10 +111,9 @@ def load_tab_data():
     # return this item
     return df
 
-init_df = load_tab_data()
 
 def filter_data():
-    df = init_df
+    df = load_tab_data()
 
     # year filter
     if years[0] != years[1]:
@@ -147,8 +146,6 @@ def filter_data():
 
     return filtered_df, grouped_df
 
-filtered_df = filter_data()[0]
-grouped_df = filter_data()[1]
 
 # colors to be used in the mapping functions
 custom_colors = [
@@ -164,7 +161,7 @@ custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h i
 def mapper():
 
     # tabular data
-    df = grouped_df
+    df = filter_data()[1]
 
     # read in geospatial
     gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
@@ -261,7 +258,7 @@ def mapper():
 
 def charter():
     # go read the dataaaaa
-    df = filtered_df
+    df = filter_data()[0]
 
     # create columns extracting just the month and year from the 'Sale Date' column
     df['year'] = pd.DatetimeIndex(df['Sale Date']).year
@@ -336,8 +333,8 @@ map_view = col2.radio(
             index=0
             )
 
-
-col1.pydeck_chart(mapper(), use_container_width=True)
+# col1.pydeck_chart(mapper(), use_container_width=True)
+col1.write("map goes here")
 
 # kpi's
 df_metric = filter_data()[0]
@@ -347,8 +344,6 @@ with col3:
     subcol1.metric("median home price:", 65)
     subcol2.metric("total sales:", "5,000")
     subcol3.metric("median vintage:", 2017)
-
-
 
 
 # line chart
