@@ -112,7 +112,7 @@ def load_tab_data():
     df['month'] = pd.DatetimeIndex(df['Sale Date']).month
     df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
 
-    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month']]
+    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month', 'Sale Date']]
 
     # return this item
     return df
@@ -268,19 +268,20 @@ def charter():
     # test chart
     df = filter_data()[0]
 
+    df_grouped = df.groupby('year-month').agg({
+        'price_sf':'median',
+        'month':pd.Series.mode,
+        'year':pd.Series.mode,
+        }).reset_index()
     
-
-    # df_grouped = df.groupby('year-month').agg({
-    #     'price_sf':'median',
-    #     'month':pd.Series.mode,
-    #     'year':pd.Series.mode,
-    #     }).reset_index()
+    # # sort the data so that it's chronological
+    df_grouped = df_grouped.sort_values(['year', 'month'])
     
 
     fig = px.line(
-        df, 
+        df_grouped, 
         x="year-month",
-        y=df['price_sf'],
+        y=df_grouped['price_sf'],
         labels={
             'year-month':'Time Period'
             })
