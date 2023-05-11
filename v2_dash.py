@@ -111,73 +111,74 @@ def load_tab_data():
     # return this item
     return df
 
+df_init = load_tab_data()
 
-# filter the data
-df = load_tab_data()
+# # filter the data
+# df = load_tab_data()
 
-# year filter
-if years[0] != years[1]:
-    filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-else:
-    filtered_df = df[df['year_sale'] == years[0]]
+# # year filter
+# if years[0] != years[1]:
+#     filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+# else:
+#     filtered_df = df[df['year_sale'] == years[0]]
 
-# home size filter
-if sq_footage[0] == sq_footage[1]:
-    st.error("Please select unique slider values for home size.")
-elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-    filtered_df = df[df['Square Ft'] <= sq_footage[1]]
-elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-    filtered_df = df[df['Square Ft'] >= sq_footage[0]]
-elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-    filtered_df = df #i.e., don't apply a filter
-else:
-    filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
+# # home size filter
+# if sq_footage[0] == sq_footage[1]:
+#     st.error("Please select unique slider values for home size.")
+# elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+#     filtered_df = df[df['Square Ft'] <= sq_footage[1]]
+# elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
+#     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
+# elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+#     filtered_df = df #i.e., don't apply a filter
+# else:
+#     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
-# filter by sub-geography (if applicable)
-if geography_included == 'Sub-geography':
-    filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
+# # filter by sub-geography (if applicable)
+# if geography_included == 'Sub-geography':
+#     filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
 
-# now group by GEOID
-grouped_df = filtered_df.groupby('GEOID').agg({
-    'price_sf':'median',
-    'year_blt':'median',
-    'unique_ID':'count',
-    }).reset_index()
+# # now group by GEOID
+# grouped_df = filtered_df.groupby('GEOID').agg({
+#     'price_sf':'median',
+#     'year_blt':'median',
+#     'unique_ID':'count',
+#     }).reset_index()
 
 
-# def filter_data():
-    # df = load_tab_data()
+def filter_data():
+    df = df_init
 
-    # # year filter
-    # if years[0] != years[1]:
-    #     filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
-    # else:
-    #     filtered_df = df[df['year_sale'] == years[0]]
+    # year filter
+    if years[0] != years[1]:
+        filtered_df = df[(df['year_sale'] >= years[0]) & (df['year_sale'] <= years[1])]
+    else:
+        filtered_df = df[df['year_sale'] == years[0]]
 
-    # # home size filter
-    # if sq_footage[0] == sq_footage[1]:
-    #     st.error("Please select unique slider values for home size.")
-    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-    #     filtered_df = df[df['Square Ft'] <= sq_footage[1]]
-    # elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
-    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = filtered_df #i.e., don't apply a filter
-    # else:
-    #     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
+    # home size filter
+    if sq_footage[0] == sq_footage[1]:
+        st.error("Please select unique slider values for home size.")
+    elif ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+        filtered_df = df[df['Square Ft'] <= sq_footage[1]]
+    elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
+        filtered_df = df[df['Square Ft'] >= sq_footage[0]]
+    elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+        filtered_df = filtered_df #i.e., don't apply a filter
+    else:
+        filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
-    # # filter by sub-geography (if applicable)
-    # if geography_included == 'Sub-geography':
-    #     filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
+    # filter by sub-geography (if applicable)
+    if geography_included == 'Sub-geography':
+        filtered_df = filtered_df[filtered_df['Sub_geo'].isin(sub_geo)]
 
-    # # now group by GEOID
-    # grouped_df = filtered_df.groupby('GEOID').agg({
-    #     'price_sf':'median',
-    #     'year_blt':'median',
-    #     'unique_ID':'count',
-    #     }).reset_index()
+    # now group by GEOID
+    grouped_df = filtered_df.groupby('GEOID').agg({
+        'price_sf':'median',
+        'year_blt':'median',
+        'unique_ID':'count',
+        }).reset_index()
 
-    # return filtered_df, grouped_df
+    return filtered_df, grouped_df
 
 
 # colors to be used in the mapping functions
@@ -194,7 +195,7 @@ custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h i
 def mapper():
 
     # tabular data
-    df = grouped_df
+    df = filter_data()[1]
 
     # read in geospatial
     gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
@@ -291,7 +292,7 @@ def mapper():
 
 def charter():
     # go read the dataaaaa
-    df = filtered_df
+    df = filter_data()[0]
 
     # create columns extracting just the month and year from the 'Sale Date' column
     df['year'] = pd.DatetimeIndex(df['Sale Date']).year
