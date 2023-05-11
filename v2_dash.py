@@ -162,6 +162,8 @@ custom_colors = [
     '#022b3a'
     ]
 
+
+
 # convert the above hex list to RGB values
 custom_colors = [tuple(int(h.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) for h in custom_colors]
 
