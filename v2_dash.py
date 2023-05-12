@@ -24,9 +24,9 @@ hide_default_format = """
                 padding-right: 30px;
                 padding-top: 10px;
             }
-            .css-1544g2n.e1fqkh3o4 {
-                padding-left: 30px;
-                padding-right: 30px;
+            [data-testid="stSidebar"] {
+                padding-left: 18px;
+                padding-right: 18px;
                 }
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
@@ -48,6 +48,7 @@ hide_default_format = """
             div.stActionButton{visibility: hidden;}
         </style>
        """
+
 
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
@@ -360,11 +361,14 @@ def charter():
 
     # update the fig
     fig.update_layout(
-        title_text='<span style="font-size: 18px;">Median Sales Price / SF</span> <br> <span style="font-size: 14px;">Orange vertical lines show range of selected years</span>', 
+        title_text='<span style="font-size: 18px;">Median Sales Price / SF</span> <br> <span style="font-size: 14px;">Orange vertical lines show range of selected years<br></span>', 
         title_x=0.05, 
         title_y=0.93,
         title_font_color="#022B3A",
-        yaxis = dict(
+        margin=dict(
+            t=85
+        ),
+        yaxis=dict(
             linecolor = "#022B3A",
             title = None,
             tickfont_color = '#022B3A',
@@ -372,7 +376,7 @@ def charter():
             tickformat = '$.0f',
             showgrid = False
             ),
-        xaxis = dict(
+        xaxis=dict(
             linecolor = "#022B3A",
             linewidth = 1,
             tickfont_color = '#022B3A',
