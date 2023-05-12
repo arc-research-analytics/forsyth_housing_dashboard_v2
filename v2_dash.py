@@ -89,6 +89,7 @@ if geography_included == 'Sub-geography':
 
 # horizongal divider
 # st.sidebar.divider()
+st.sidebar.write("---")
 map_view = st.sidebar.radio(
         'Map view:',
         ('2D', '3D'),
