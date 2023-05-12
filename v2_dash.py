@@ -22,16 +22,24 @@ hide_default_format = """
                 padding-bottom: 1px;
                 padding-left: 30px;
                 padding-right: 30px;
-                padding-top: 10px;}
+                padding-top: 10px;
+            }
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
                 }
             div[data-testid="metric-container"] {
                 text-align: left;
                 color: #022B3A;
+                font-size: 10px;
+                font-weight: 600;
+                }
+            [data-testid="stMetricValue"] {
+                color: #022B3A;
+                font-size: 35px;
                 }
             [data-testid="stMetricLabel"] {
                 color: #022B3A;
+                font-size: 15px;
                 }
             div.stActionButton{visibility: hidden;}
         </style>
@@ -59,9 +67,9 @@ years = st.sidebar.select_slider(
     help='Filter sales data by transaction year.'
 )
 
-# trends title 
+# dashboard title 
 if years[0] != years[1]:
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 800;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
 else:
     st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} only</span></h2>", unsafe_allow_html=True)
 
