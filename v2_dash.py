@@ -362,7 +362,7 @@ def charter():
     # update the fig
     fig.update_layout(
         title_text='<span style="font-size: 18px;">Median Sales Price / SF</span> <br> <span style="font-size: 14px;">Orange vertical lines show range of selected years<br></span>', 
-        title_x=0.05, 
+        title_x=0, 
         title_y=0.93,
         title_font_color="#022B3A",
         margin=dict(
