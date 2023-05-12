@@ -54,7 +54,7 @@ years = st.sidebar.select_slider(
     2021,
     2022
     ],
-    value=(2018,2020),
+    value=(2020,2022),
     help='Filter sales data by transaction year.'
 )
 
@@ -88,7 +88,6 @@ if geography_included == 'Sub-geography':
         help='"Regions" are pre-defined groupings of Census tracts.')
 
 # horizongal divider
-# st.sidebar.divider()
 st.sidebar.write("---")
 map_view = st.sidebar.radio(
         'Map view:',
@@ -431,5 +430,6 @@ if map_view == '2D':
         expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
 else:
     with col1:
+        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> to rotate and change map angle in 3D view.</span>", unsafe_allow_html=True)
         expander = st.expander("Note")
-        expander.markdown("<span style='color:#022B3A'>Shift + click to change map pitch & angle. Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
+        expander.markdown("<span style='color:#022B3A'>Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
