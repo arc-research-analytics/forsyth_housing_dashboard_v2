@@ -20,8 +20,8 @@ hide_default_format = """
             #MainMenu, footer {visibility: hidden;}
             section.main > div:has(~ footer ) {
                 padding-bottom: 1px;
-                padding-left: 20px;
-                padding-right: 20px;
+                padding-left: 30px;
+                padding-right: 30px;
                 padding-top: 10px;}
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
@@ -54,7 +54,8 @@ years = st.sidebar.select_slider(
     2021,
     2022
     ],
-    value=(2018,2020)
+    value=(2018,2020),
+    help='Filter sales data by transaction year.'
 )
 
 # trends title 
@@ -67,32 +68,36 @@ else:
 sq_footage = st.sidebar.select_slider(
     'Home size (SF):',
     options=['<1000',1000,2500,5000,'>5000'],
-    value=('<1000','>5000')
+    value=('<1000','>5000'),
+    help="Filter sales data by reported square footage of home as reported by the tax assessor's office."
 )
 
 # sub-geography slider
 geography_included = st.sidebar.radio(
     'Geography included:',
     ('Entire county','Sub-geography'),
-    index=0
+    index=0,
+    help='Defaults to entire county. Selecting "Sub-geography" will allow for a multi-select of smaller groupings throughout the county.'
 )
 sub_geo = ""
 if geography_included == 'Sub-geography':
     sub_geo = st.sidebar.multiselect(
         'Select one or more regions:',
         ['Cumming', 'North Forsyth', 'West Forsyth', 'South Forsyth'],
-        ['Cumming'])
-    
+        ['Cumming'],
+        help='"Regions" are pre-defined groupings of Census tracts.')
 
-# arc logo
-im = Image.open('content/logo.png')
-col1, col2, col3 = st.sidebar.columns([1,1,1])
-col2.write("")
-col2.write("")
-col2.write("")
-col2.write("")
-col2.write("")
-col2.image(im, width=80)
+# horizongal divider
+st.sidebar.divider()
+map_view = st.sidebar.radio(
+        'Map view:',
+        ('2D', '3D'),
+        index=0,
+        horizontal=True,
+        help='Toggle to 3D for extruded polygons which show "height" based on the quantity of total sales. Note that darker Census tract shading corresponds to higher median sales price per SF.'
+        )
+
+
 
 # sidebar variables ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 @st.cache_data
@@ -386,26 +391,13 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([1.75,0.3,2])
+col1, col2, col3 = st.columns([4,0.2,4])
 
-# give spacing just above the "map view" radio button, to the right of the map
-col2.write("")
-col2.write("")
-
-
-map_view = col2.radio(
-        'Map view:',
-        ('2D', '3D'),
-        index=0,
-        horizontal=False,
-        help='Toggle option to see extruded polygons based on total sales in each Census tract.'
-        )
 
 if map_view == '2D':
     col1.pydeck_chart(mapper_2D(), use_container_width=True)
 else:
     col1.pydeck_chart(mapper_3D(), use_container_width=True)
-
 
 
 
@@ -424,13 +416,19 @@ with col3:
 # line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
 
+# arc logo
+im = Image.open('content/logo.png')
+with col3:
+    subcol1, subcol2, subcol3, subcol4, subcol5 = st.columns([1, 1, 1, 1, 1])
+    subcol4.write("Powered by")
+    subcol5.image(im, width=80)
 
 
 if map_view == '2D':
     with col1:
         expander = st.expander("Note")
-        expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period.Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
+        expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
 else:
     with col1:
         expander = st.expander("Note")
-        expander.markdown("<span style='color:#022B3A'>Shift + click to change map pitch & angle. Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
+        expander.markdown("<span style='color:#022B3A'>Shift + click to change map pitch & angle. Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
