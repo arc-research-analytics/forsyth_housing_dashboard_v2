@@ -34,7 +34,7 @@ hide_default_format = """
             div[data-testid="metric-container"] {
                 text-align: left;
                 color: #022B3A;
-                font-size: 10px;
+                font-size: 30px;
                 font-weight: 600;
                 }
             [data-testid="stMetricValue"] {
@@ -48,7 +48,6 @@ hide_default_format = """
             div.stActionButton{visibility: hidden;}
         </style>
        """
-
 
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
@@ -74,9 +73,9 @@ years = st.sidebar.select_slider(
 
 # dashboard title 
 if years[0] != years[1]:
-    st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 800;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 900;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
 else:
-    st.markdown(f"<h2 style='color:#022B3A'>Forsyth County Housing Trends | <span style='color:#FF8966'>{years[0]} only</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#FFFFFF'; font-weight: 900;>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} only</span></h2>", unsafe_allow_html=True)
 
 # square footage slider
 sq_footage = st.sidebar.select_slider(
@@ -110,8 +109,6 @@ map_view = st.sidebar.radio(
         horizontal=True,
         help='Toggle to 3D for extruded polygons which show "height" based on the quantity of total sales. Note that darker Census tract shading corresponds to higher median sales price per SF.'
         )
-
-
 
 # sidebar variables ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 @st.cache_data
