@@ -52,9 +52,10 @@ years = st.sidebar.select_slider(
     2019,
     2020,
     2021,
-    2022
+    2022,
+    2023
     ],
-    value=(2020,2022),
+    value=(2021,2023),
     help='Filter sales data by transaction year.'
 )
 
@@ -103,22 +104,22 @@ map_view = st.sidebar.radio(
 @st.cache_data
 def load_tab_data():
     # load the data
-    df = pd.read_csv('Geocoded_Final_Joined.csv', thousands=',', keep_default_na=False)
+    df = pd.read_csv('Geocoded_Final_Joined2.csv', thousands=',', keep_default_na=False)
 
-    # clean up the data
-    df.rename(columns={
-        'Year  Built':'year_blt',
-        'Year':'year_sale'
-    }, inplace=True)
-    df['GEOID'] = df['GEOID'].astype(str)
-    df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
+    # # clean up the data
+    # df.rename(columns={
+    #     'Year  Built':'year_blt',
+    #     'Year':'year_sale'
+    # }, inplace=True)
+    # df['GEOID'] = df['GEOID'].astype(str)
+    # df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
 
-    # get the columns to be used by charter
-    df['year'] = pd.DatetimeIndex(df['Sale Date']).year
-    df['month'] = pd.DatetimeIndex(df['Sale Date']).month
-    df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+    # # get the columns to be used by charter
+    # df['year'] = pd.DatetimeIndex(df['Sale Date']).year
+    # df['month'] = pd.DatetimeIndex(df['Sale Date']).month
+    # df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
 
-    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month', 'Sale Date']]
+    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month']]
 
     # return this item
     return df
@@ -174,6 +175,7 @@ def mapper_2D():
 
     # tabular data
     df = filter_data()[1]
+    df['GEOID'] = df['GEOID'].astype(str)
 
     # read in geospatial
     gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
@@ -244,6 +246,7 @@ def mapper_3D():
 
     # tabular data
     df = filter_data()[1]
+    df['GEOID'] = df['GEOID'].astype(str)
 
     # read in geospatial
     gdf = gpd.read_file('Geography/Forsyth_CTs.gpkg')
@@ -374,7 +377,8 @@ def charter():
         2019:'2019-1',
         2020:'2020-1',
         2021:'2021-1',
-        2022:'2022-1'
+        2022:'2022-1',
+        2023:'2023-1'
     }
 
     year_end = {
@@ -382,7 +386,8 @@ def charter():
         2019:'2019-12',
         2020:'2020-12',
         2021:'2021-12',
-        2022:'2022-12'
+        2022:'2022-12',
+        2023:'2023-4'
     }
 
     fig.add_vline(x=year_start[years[0]], line_width=2, line_dash="dash", line_color="#FF8966")
