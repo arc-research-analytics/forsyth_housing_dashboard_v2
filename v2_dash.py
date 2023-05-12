@@ -88,7 +88,7 @@ if geography_included == 'Sub-geography':
         help='"Regions" are pre-defined groupings of Census tracts.')
 
 # horizongal divider
-st.sidebar.divider()
+# st.sidebar.divider()
 map_view = st.sidebar.radio(
         'Map view:',
         ('2D', '3D'),
