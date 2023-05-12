@@ -24,6 +24,10 @@ hide_default_format = """
                 padding-right: 30px;
                 padding-top: 10px;
             }
+            .css-1544g2n.e1fqkh3o4 {
+                padding-left: 30px;
+                padding-right: 30px;
+                }
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
                 }
@@ -219,7 +223,7 @@ def mapper_2D():
         min_zoom=8,
         pitch=0,
         bearing=0,
-        height=540
+        height=560
         )
     geojson = pdk.Layer(
         "GeoJsonLayer",
@@ -290,7 +294,7 @@ def mapper_3D():
         min_zoom=8,
         pitch=45,
         bearing=0,
-        height=540
+        height=560
         )
     
     # create geojson layer
