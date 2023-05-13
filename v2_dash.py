@@ -31,20 +31,6 @@ hide_default_format = """
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
                 }
-            div[data-testid="metric-container"] {
-                text-align: left;
-                color: #022B3A;
-                font-size: 30px;
-                font-weight: 600;
-                }
-            [data-testid="stMetricValue"] {
-                color: #022B3A;
-                font-size: 35px;
-                }
-            [data-testid="stMetricLabel"] {
-                color: #022B3A;
-                font-size: 15px;
-                }
             div.stActionButton{visibility: hidden;}
         </style>
        """
@@ -221,8 +207,9 @@ def mapper_2D():
         min_zoom=8,
         pitch=0,
         bearing=0,
-        height=560
+        height=565
         )
+    
     geojson = pdk.Layer(
         "GeoJsonLayer",
         joined_df,
@@ -292,7 +279,7 @@ def mapper_3D():
         min_zoom=8,
         pitch=45,
         bearing=0,
-        height=560
+        height=565
         )
     
     # create geojson layer
@@ -358,7 +345,7 @@ def charter():
 
     # update the fig
     fig.update_layout(
-        title_text='<span style="font-size: 18px;">Median Sales Price / SF</span><br><span style="font-size: 14px;">Orange vertical lines show range of selected years</span>', 
+        title_text='<span style="font-size: 20px;">Median Sales Price / SF</span><br><span style="font-size: 14px;">Orange vertical lines show range of selected years</span>', 
         title_x=0, 
         title_y=0.93,
         title_font_color="#022B3A",
@@ -369,7 +356,7 @@ def charter():
             linecolor = "#022B3A",
             title = None,
             tickfont_color = '#022B3A',
-            tickfont_size = 14,
+            tickfont_size = 16,
             tickformat = '$.0f',
             showgrid = False
             ),
@@ -378,6 +365,8 @@ def charter():
             linewidth = 1,
             tickfont_color = '#022B3A',
             title = None,
+            tickangle=90,
+            tickfont_size = 13,
             tickformat = '%b %Y',
             dtick = 'M3'
             ),
@@ -417,19 +406,30 @@ if map_view == '2D':
 else:
     col1.pydeck_chart(mapper_3D(), use_container_width=True)
 
-
-
 # kpi's
 median_value = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
 med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 
+# kpi styles
+label_font_size = '18px'
+label_font_color = '#022B3A'
+value_font_size = '35px'
+value_font_color = '#022B3A'
+value_font_weight = '650'
+
+# KPI tyme
 with col3:
     subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
-    subcol1.metric("Median price / SF", median_value)
-    subcol2.metric("Total sales", total_sales)
-    subcol3.metric("Median vintage", med_vintage)
 
+    # first metric
+    subcol1.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Median price / SF</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{median_value}</span>", unsafe_allow_html=True)
+
+    # second metric
+    subcol2.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Total sales</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{total_sales}</span>", unsafe_allow_html=True)
+
+    # third metric
+    subcol3.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Median vintage</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{med_vintage}</span>", unsafe_allow_html=True)
 
 # line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
@@ -441,7 +441,7 @@ with col3:
     subcol4.write("Powered by")
     subcol5.image(im, width=80)
 
-
+# put expander explanatory text
 if map_view == '2D':
     with col1:
         expander = st.expander("Notes")
