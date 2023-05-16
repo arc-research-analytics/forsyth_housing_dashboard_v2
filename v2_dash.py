@@ -428,7 +428,7 @@ with col3:
     subcol1, subcol2, subcol3, subcol4 = st.columns([1, 1, 1, 1])
 
     # first metric - "Total sales"
-    subcol1.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Total sales</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
+    subcol1.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Total home sales</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
     # second metric - "Median price / SF"
     subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median price / SF</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
