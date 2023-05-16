@@ -55,7 +55,7 @@ years = st.sidebar.select_slider(
     2023
     ],
     value=(2021,2023),
-    help='Filter sales data by transaction year.'
+    help='Filter sales by transaction year.'
 )
 
 # dashboard title 
@@ -69,7 +69,7 @@ sq_footage = st.sidebar.select_slider(
     'Home size (SF):',
     options=['<1000',1000,2500,5000,'>5000'],
     value=('<1000','>5000'),
-    help="Filter sales data by reported square footage of home as reported by the tax assessor's office."
+    help="Filter sales by square footage of home as reported by the county tax assessor's office."
 )
 
 # sub-geography slider
@@ -77,7 +77,7 @@ geography_included = st.sidebar.radio(
     'Geography included:',
     ('Entire county','Sub-geography'),
     index=0,
-    help='Defaults to entire county. Selecting "Sub-geography" will allow for a multi-select of smaller groupings throughout the county.'
+    help='Filter sales by location. Defaults to entire county. "Sub-geography" filter will allow multi-select of smaller groupings within the county.'
 )
 sub_geo = ""
 if geography_included == 'Sub-geography':
