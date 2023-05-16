@@ -22,11 +22,12 @@ hide_default_format = """
                 padding-bottom: 1px;
                 padding-left: 30px;
                 padding-right: 30px;
-                padding-top: 10px;
+                padding-top: 15px;
             }
             [data-testid="stSidebar"] {
                 padding-left: 18px;
                 padding-right: 18px;
+                padding-top: 0px;
                 }
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
@@ -93,27 +94,27 @@ map_view = st.sidebar.radio(
         ('2D', '3D'),
         index=0,
         horizontal=True,
-        help='Toggle to 3D for extruded polygons which show "height" based on the quantity of total sales. Note that darker Census tract shading corresponds to higher median sales price per SF.'
+        help='Toggle 3D view for extruded polygons which show "height" based on the quantity of total sales in each Census tract subject to the filters chosen. Shift + click to change pitch and rotation of map. Darker Census tract shading corresponds to higher median sales price per SF.'
         )
+
+base_map = st.sidebar.selectbox(
+    'Base map:',
+    ('Streets', 'Satellite', 'Gray'),
+    index=0,
+    help='Change underlying base map.'
+)
+
+base_map_dict = {
+    'Streets':'road',
+    'Satellite':'satellite',
+    'Gray':'light'
+}
 
 # sidebar variables ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 @st.cache_data
 def load_tab_data():
     # load the data
-    df = pd.read_csv('Geocoded_Final_Joined2.csv', thousands=',', keep_default_na=False)
-
-    # # clean up the data
-    # df.rename(columns={
-    #     'Year  Built':'year_blt',
-    #     'Year':'year_sale'
-    # }, inplace=True)
-    # df['GEOID'] = df['GEOID'].astype(str)
-    # df['unique_ID'] = df['Address'] + '-' + df['Sale Date'].astype(str) + '-' + df['price_number'].astype(str)
-
-    # # get the columns to be used by charter
-    # df['year'] = pd.DatetimeIndex(df['Sale Date']).year
-    # df['month'] = pd.DatetimeIndex(df['Sale Date']).month
-    # df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str)
+    df = pd.read_csv('Geocoded_Final_Joined3.csv', thousands=',', keep_default_na=False)
 
     df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month']]
 
@@ -234,7 +235,7 @@ def mapper_2D():
         layers=geojson,
         initial_view_state=initial_view_state,
         map_provider='mapbox',
-        map_style='road',
+        map_style=base_map_dict[base_map],
         tooltip=tooltip)
 
     return r
@@ -309,7 +310,7 @@ def mapper_3D():
         layers=geojson,
         initial_view_state=initial_view_state,
         map_provider='mapbox',
-        map_style='road',
+        map_style=base_map_dict[base_map],
         tooltip=tooltip)
 
     return r
@@ -406,30 +407,37 @@ if map_view == '2D':
 else:
     col1.pydeck_chart(mapper_3D(), use_container_width=True)
 
-# kpi's
-median_value = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
+# kpi values
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
+median_price = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
 med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
+med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 
 # kpi styles
-label_font_size = '18px'
-label_font_color = '#022B3A'
-value_font_size = '35px'
-value_font_color = '#022B3A'
-value_font_weight = '650'
+label_font_size = 16 
+label_font_color = '022B3A'
+
+value_font_size = 30
+value_font_color = '022B3A'
+value_font_weight = '650' # thickness of the bold
+
+line_height = 25 # vertical spacing between the KPI label and value
 
 # KPI tyme
 with col3:
-    subcol1, subcol2, subcol3 = st.columns([1, 1, 1])
+    subcol1, subcol2, subcol3, subcol4 = st.columns([1, 1, 1, 1])
 
-    # first metric
-    subcol1.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Median price / SF</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{median_value}</span>", unsafe_allow_html=True)
+    # first metric - "Total sales"
+    subcol1.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Total sales</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
+    
+    # second metric - "Median price / SF"
+    subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median price / SF</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
-    # second metric
-    subcol2.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Total sales</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{total_sales}</span>", unsafe_allow_html=True)
+    # third metric - "Median SF"
+    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median SF</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
 
-    # third metric
-    subcol3.markdown(f"<span style='color:{label_font_color}; font-size:{label_font_size}; '>Median vintage</span><br><span style='color:{value_font_color}; font-size:{value_font_size}; font-weight:{value_font_weight}; line-height: 35px'>{med_vintage}</span>", unsafe_allow_html=True)
+    # fourth metric - "Median vintage"
+    subcol4.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median vintage</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
 
 # line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
