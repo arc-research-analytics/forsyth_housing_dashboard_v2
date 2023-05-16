@@ -41,7 +41,7 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 # sidebar variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-st.sidebar.markdown(f"<h4 style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</h4>", unsafe_allow_html=True)
+st.sidebar.markdown(f"<p style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</p>", unsafe_allow_html=True)
 # st.sidebar.write("")
 
 # all the years available for selection
@@ -90,7 +90,7 @@ if geography_included == 'Sub-geography':
 
 # Map options
 st.sidebar.write("---")
-st.sidebar.markdown(f"<h4 style='text-align:center;color:#FFFFFF;font-style:italic;'>Map options:</h4>", unsafe_allow_html=True)
+st.sidebar.markdown(f"<p style='text-align:center; color:#FFFFFF; font-style:italic; line-height:2px'>Map options:</p>", unsafe_allow_html=True)
 map_view = st.sidebar.radio(
         'Map view:',
         ('2D', '3D'),
