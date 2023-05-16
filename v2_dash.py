@@ -85,7 +85,7 @@ if geography_included == 'Sub-geography':
         'Select one or more regions:',
         ['Cumming', 'North Forsyth', 'West Forsyth', 'South Forsyth'],
         ['Cumming'],
-        help='"Regions" are pre-defined groupings of Census tracts.')
+        help="Select one or more pre-defined groupings of Census tracts.")
 
 # horizongal divider
 st.sidebar.write("---")
