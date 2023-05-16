@@ -11,6 +11,7 @@ st.set_page_config(
     page_title='Housing Dashboard', 
     layout="wide",
     page_icon=":house:",
+    initial_sidebar_state='auto'
     )
 
 # the custom css lives here:
