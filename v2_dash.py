@@ -41,8 +41,8 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 # sidebar variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-st.sidebar.markdown(f"<h3 style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</h3>", unsafe_allow_html=True)
-st.sidebar.write("")
+st.sidebar.markdown(f"<h4 style='text-align:center;color:#FFFFFF;font-style:italic;'>Filter housing data by:</h4>", unsafe_allow_html=True)
+# st.sidebar.write("")
 
 # all the years available for selection
 years = st.sidebar.select_slider(
@@ -88,8 +88,9 @@ if geography_included == 'Sub-geography':
         ['Cumming'],
         help="Select one or more pre-defined groupings of Census tracts.")
 
-# horizongal divider
+# Map options
 st.sidebar.write("---")
+st.sidebar.markdown(f"<h4 style='text-align:center;color:#FFFFFF;font-style:italic;'>Map options:</h4>", unsafe_allow_html=True)
 map_view = st.sidebar.radio(
         'Map view:',
         ('2D', '3D'),
@@ -334,6 +335,7 @@ def charter():
         df_grouped, 
         x="year-month",
         y=df_grouped['price_sf'],
+        # color='Sub_geo',
         labels={
             'year-month':'Time Period'
             })
