@@ -8,10 +8,10 @@ from datetime import date
 
 # customize
 st.set_page_config(
-    page_title='Housing Dashboard', 
+    page_title="Housing Dashboard", 
     layout="wide",
     page_icon=":house:",
-    initial_sidebar_state='auto'
+    initial_sidebar_state="collapsed"
     )
 
 # the custom css lives here:
