@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="Housing Dashboard", 
     layout="wide",
     page_icon=":house:",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
     )
 
 # the custom css lives here:
