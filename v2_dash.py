@@ -116,9 +116,21 @@ base_map_dict = {
 @st.cache_data
 def load_tab_data():
     # load the data
-    df = pd.read_csv('Geocoded_Final_Joined3.csv', thousands=',', keep_default_na=False)
+    df = pd.read_csv('Geocoded_Final_Joined4.csv', thousands=',', keep_default_na=False)
+    df['Sale Price'] = df['Sale Price'].str.replace('[\$,]','',regex=True).str.replace(',','',regex=True)
 
-    df = df[['Square Ft','year_sale','year_blt','price_sf','GEOID','Sub_geo','unique_ID', 'year', 'month', 'year-month']]
+    df = df[[
+        'Square Ft',
+        'year_sale',
+        'year_blt',
+        'price_sf',
+        'Sale Price',
+        'GEOID',
+        'Sub_geo',
+        'unique_ID', 
+        'year', 
+        'month', 
+        'year-month']]
 
     # return this item
     return df
@@ -153,6 +165,7 @@ def filter_data():
     # now group by GEOID
     grouped_df = filtered_df_map_KPI.groupby('GEOID').agg({
         'price_sf':'median',
+        'Sale Price':'median',
         'year_blt':'median',
         'unique_ID':'count',
         }).reset_index()
@@ -205,7 +218,7 @@ def mapper_2D():
     initial_view_state = pdk.ViewState(
         latitude=34.207054643497315,
         longitude=-84.10535919531371, 
-        zoom=9.6, 
+        zoom=9.2, 
         max_zoom=15, 
         min_zoom=8,
         pitch=0,
@@ -230,7 +243,12 @@ def mapper_2D():
 
     tooltip = {
             "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
-            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica", "text-align": "center"},
+            "style": {"background": "rgba(2,43,58,0.7)", 
+                      "border": "1px solid white", 
+                      "color": "white", 
+                      "font-family": "Helvetica", 
+                      "text-align": "center"
+                      },
             }
     
     r = pdk.Deck(
@@ -305,7 +323,12 @@ def mapper_3D():
 
     tooltip = {
             "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
-            "style": {"background": "rgba(2,43,58,0.7)", "color": "white", "font-family": "Helvetica", "text-align": "center"},
+            "style": {"background": "rgba(2,43,58,0.7)", 
+                      "border": "1px solid white", 
+                      "color": "white", 
+                      "font-family": "Helvetica", 
+                      "text-align": "center"
+                      },
             }
     
     r = pdk.Deck(
@@ -402,7 +425,7 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([4,0.2,4])
+col1, col2, col3 = st.columns([2.8,0.2,4])
 
 
 if map_view == '2D':
@@ -412,7 +435,8 @@ else:
 
 # kpi values
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
-median_price = '${:,.0f}'.format(filter_data()[2]['price_sf'].median())
+median_price_SF = '${:.0f}'.format(filter_data()[2]['price_sf'].median())
+median_price = '${:,.0f}'.format(filter_data()[2]['Sale Price'].median())
 med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 
@@ -433,17 +457,17 @@ with col3:
     # first metric - "Total sales"
     subcol1.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Total home sales</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
-    # second metric - "Median price / SF"
-    subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median price / SF</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
+    # second metric - "Median price"
+    subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median sale price</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
     # third metric - "Median SF"
-    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median SF</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
+    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median size (SF)</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
 
     # fourth metric - "Median vintage"
     subcol4.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median vintage</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
 
 # line chart
-col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False})
+col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False}, help='test')
 
 # arc logo
 im = Image.open('content/logo.png')
@@ -459,6 +483,6 @@ if map_view == '2D':
         expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
 else:
     with col1:
-        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> to rotate and change map angle in 3D view.</span>", unsafe_allow_html=True)
+        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> to rotate and change map angle in 3D view. Census tract 'height' represents the total sales.</span>", unsafe_allow_html=True)
         expander = st.expander("Notes")
         expander.markdown("<span style='color:#022B3A'>Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
