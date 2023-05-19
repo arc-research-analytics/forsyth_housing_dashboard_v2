@@ -425,7 +425,7 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([2.8,0.2,4])
+col1, col2, col3 = st.columns([3,0.15,3])
 
 
 if map_view == '2D':
