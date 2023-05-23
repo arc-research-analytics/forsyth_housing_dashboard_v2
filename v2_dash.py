@@ -228,7 +228,7 @@ def mapper_2D():
     joined_df = gpd.GeoDataFrame(joined_df)
 
     # format the column to show the price / SF
-    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.2f}".format((x)))
+    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.0f}".format((x)))
 
     # add 1,000 separator to column that will show total sales
     joined_df['total_sales'] = joined_df['unique_ID'].apply(lambda x: '{:,}'.format(x))
@@ -305,7 +305,7 @@ def mapper_3D():
     joined_df = gpd.GeoDataFrame(joined_df)
 
     # format the column to show the price / SF
-    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.2f}".format((x)))
+    joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.0f}".format((x)))
 
     # add 1,000 separator to column that will show total sales
     joined_df['total_sales'] = joined_df['unique_ID'].apply(lambda x: '{:,}'.format(x))
@@ -463,7 +463,7 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([2.8,0.15,3])
+col1, col2, col3 = st.columns([2.7,0.15,3])
 
 
 if map_view == '2D':
