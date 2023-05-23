@@ -397,7 +397,7 @@ def charter():
         line_color='#022B3A',
         hovertemplate="<br>".join([
             "<b>%{x}</b><br>",
-            "Median price per SF: <b>%{y}</b>",
+            "Median price / SF: <b>%{y}</b>",
             "Total sales: <b>%{customdata[0]:,.0f}</b>"
             ])
         )
@@ -411,9 +411,17 @@ def charter():
     chart_subtitle_color = '#022B3A'
     chart_subtitle_font_weight = '650'
 
+    if sub_geo == "":
+        chart_title_text = "Countywide Median Price / SF"
+    elif len(sub_geo) == 1:
+        chart_title_text = f"Median Price / SF For {sub_geo[0]}"
+    else:
+        chart_title_text = f"Median Price / SF For Selected Regions"
+
+
     # update the fig
     fig.update_layout(
-        title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">Countywide Median Sales Price / SF</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}">Orange lines reflect range of selected years.</span>', 
+        title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">{chart_title_text}</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}"><i>Orange lines reflect range of selected years</i></span>', 
         title_x=0, 
         title_y=0.93,
         margin=dict(
@@ -509,7 +517,7 @@ with col3:
     subcol1.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Total home sales</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
     # second metric - "Median price"
-    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price}</span>", unsafe_allow_html=True)
+    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price_SF}</span>", unsafe_allow_html=True)
 
     # third metric - "Median vintage"
     subcol3.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median vintage</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
