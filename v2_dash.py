@@ -483,7 +483,7 @@ KPI_label_font_size = '15'
 KPI_label_font_color = '#FFFFFF'
 KPI_label_font_weight = '650' # thickness of the bold
 
-KPI_value_font_size = '30'
+KPI_value_font_size = '25'
 KPI_value_font_color = '#022B3A'
 KPI_value_font_weight = '650' # thickness of the bold
 
