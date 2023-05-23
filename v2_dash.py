@@ -397,9 +397,9 @@ def charter():
         line_color='#022B3A',
         hovertemplate="<br>".join([
             "<b>%{x}</b><br>",
-            "Price per SF: <b>%{y}</b>",
+            "Median price per SF: <b>%{y}</b>",
             "Total sales: <b>%{customdata[0]:,.0f}</b>"
-            ]),
+            ])
         )
 
     # set chart title style variables
@@ -413,7 +413,7 @@ def charter():
 
     # update the fig
     fig.update_layout(
-        title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">Monthly Median Sales Price / SF</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}">Orange lines reflect range of selected years.</span>', 
+        title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">Countywide Median Sales Price / SF</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}">Orange lines reflect range of selected years.</span>', 
         title_x=0, 
         title_y=0.93,
         margin=dict(
