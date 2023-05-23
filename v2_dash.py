@@ -23,7 +23,7 @@ hide_default_format = """
                 padding-bottom: 1px;
                 padding-left: 35px;
                 padding-right: 35px;
-                padding-top: 15px;
+                padding-top: 12px;
             }
             [data-testid="stSidebar"] {
                 padding-left: 18px;
@@ -464,7 +464,7 @@ def charter():
 
 # define columns
 col1, col2, col3 = st.columns([
-    2, # map column
+    2.5, # map column
     0.2, # spacer column
     3 # KPI / chart column
     ]) 
