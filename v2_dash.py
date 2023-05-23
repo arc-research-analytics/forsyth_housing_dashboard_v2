@@ -59,11 +59,17 @@ years = st.sidebar.select_slider(
     help='Filter sales by transaction year.'
 )
 
-# dashboard title 
+# dashboard title styling variables
+dash_title1_color = '#FFFFFF'
+dash_title1_font_weight = '900'
+
+dash_title2_color = '#022B3A'
+dash_title2_font_weight = '800'
+
 if years[0] != years[1]:
-    st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 900;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:{dash_title1_color}; font-weight: {dash_title1_font_weight};'>Forsyth County Housing Trends | <span style='color:{dash_title2_color}; font-weight: {dash_title2_font_weight}'>{years[0]} - {years[1]}</span></h2>", unsafe_allow_html=True)
 else:
-    st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 900;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} only</span></h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:{dash_title1_color}; font-weight: {dash_title1_font_weight};'>Forsyth County Housing Trends | <span style='color:{dash_title2_color}; font-weight: {dash_title2_font_weight}'>{years[0]} only</span></h2>", unsafe_allow_html=True)
 
 # # square footage slider
 # sq_footage = st.sidebar.select_slider(
@@ -394,14 +400,17 @@ def charter():
         )
 
     # set chart title style variables
-    title_color = '#FFFFFF'
-    title_font_size = '20'
-    subtitle_color = '#022B3A'
-    subtitle_font_size = '14'
+    chart_title_font_size = '17'
+    chart_title_color = '#FFFFFF'
+    chart_title_font_weight = '650'
+    
+    chart_subtitle_font_size = '14'
+    chart_subtitle_color = '#022B3A'
+    chart_subtitle_font_weight = '650'
 
     # update the fig
     fig.update_layout(
-        title_text=f'<span style="font-size: {title_font_size}px; color: {title_color}">Monthly Median Sales Price / SF</span><br><span style="font-size: {subtitle_font_size}px; color: {subtitle_color}">Orange lines reflect range of selected years.</span>', 
+        title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">Monthly Median Sales Price / SF</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}">Orange lines reflect range of selected years.</span>', 
         title_x=0, 
         title_y=0.93,
         # title_font_color="#022B3A",
@@ -470,30 +479,31 @@ med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 
 # kpi styles
-label_font_size = 16 
-label_font_color = 'FFFFFF'
+KPI_label_font_size = '16' 
+KPI_label_font_color = '#FFFFFF'
+KPI_label_font_weight = '650' # thickness of the bold
 
-value_font_size = 30
-value_font_color = '022B3A'
-value_font_weight = '650' # thickness of the bold
+KPI_value_font_size = '30'
+KPI_value_font_color = '#022B3A'
+KPI_value_font_weight = '650' # thickness of the bold
 
-line_height = 25 # vertical spacing between the KPI label and value
+KPI_line_height = '25' # vertical spacing between the KPI label and value
 
 # KPI tyme
 with col3:
     subcol1, subcol2, subcol3, subcol4 = st.columns([1, 1, 1, 1])
 
     # first metric - "Total sales"
-    subcol1.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Total home sales</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
+    subcol1.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Total home sales</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
     # second metric - "Median price"
-    subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median sale price</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
+    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
     # third metric - "Median vintage"
-    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median vintage</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
+    subcol3.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median vintage</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
     
     # fourth metric - "Median SF"
-    subcol4.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median size (SF)</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
+    subcol4.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median size (SF)</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
     
 
 # line chart
