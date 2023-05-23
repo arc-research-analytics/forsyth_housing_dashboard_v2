@@ -21,8 +21,8 @@ hide_default_format = """
             #MainMenu, footer {visibility: hidden;}
             section.main > div:has(~ footer ) {
                 padding-bottom: 1px;
-                padding-left: 30px;
-                padding-right: 30px;
+                padding-left: 35px;
+                padding-right: 35px;
                 padding-top: 15px;
             }
             [data-testid="stSidebar"] {
@@ -463,7 +463,7 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([2.7,0.15,3])
+col1, col2, col3 = st.columns([2.5,0.15,2.8])
 
 
 if map_view == '2D':
