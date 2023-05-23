@@ -375,6 +375,7 @@ def charter():
 
     df_grouped = df.groupby('year-month').agg({
         'price_sf':'median',
+        'unique_ID':'count',
         'month':pd.Series.mode,
         'year':pd.Series.mode,
         }).reset_index()
@@ -386,17 +387,19 @@ def charter():
     fig = px.line(
         df_grouped, 
         x="year-month",
-        y=df_grouped['price_sf'],
-        # color='Sub_geo',
-        labels={
-            'year-month':'Time Period'
-            })
+        y='price_sf',
+        custom_data=['unique_ID']
+            )
       
     # modify the line itself
     fig.update_traces(
         mode="lines",
         line_color='#022B3A',
-        hovertemplate=None
+        hovertemplate="<br>".join([
+            "<b>%{x}</b><br>",
+            "Price per SF: <b>%{y}</b>",
+            "Total sales: <b>%{customdata[0]:,.0f}</b>"
+            ]),
         )
 
     # set chart title style variables
@@ -413,15 +416,20 @@ def charter():
         title_text=f'<span style="font-size:{chart_title_font_size}px; font-weight:{chart_title_font_weight}; color:{chart_title_color}">Monthly Median Sales Price / SF</span><br><span style="font-size:{chart_subtitle_font_size}px; font-weight:{chart_subtitle_font_weight}; color:{chart_subtitle_color}">Orange lines reflect range of selected years.</span>', 
         title_x=0, 
         title_y=0.93,
-        # title_font_color="#022B3A",
         margin=dict(
             t=85
         ),
+        hoverlabel=dict(
+            bgcolor="#022B3A",
+            bordercolor = "#FFFFFF",
+            font_size=16, # set the font size of the chart tooltip
+            align="left"
+            ),
         yaxis=dict(
             linecolor = "#022B3A",
             title = None,
             tickfont_color = '#022B3A',
-            tickfont_size = 16,
+            tickfont_size = 13,
             tickformat = '$.0f',
             showgrid = False
             ),
@@ -436,7 +444,7 @@ def charter():
             dtick = 'M3'
             ),
         height=500,
-        hovermode="x unified")
+        hovermode="closest")
 
     # add shifting vertical lines
     year_start = {
