@@ -435,7 +435,7 @@ def charter():
             tickformat = '%b %Y',
             dtick = 'M3'
             ),
-        height=520,
+        height=500,
         hovermode="x unified")
 
     # add shifting vertical lines
@@ -463,7 +463,11 @@ def charter():
     return fig
 
 # define columns
-col1, col2, col3 = st.columns([2.5,0.15,2.8])
+col1, col2, col3 = st.columns([
+    2, # map column
+    0.2, # spacer column
+    3 # KPI / chart column
+    ]) 
 
 
 if map_view == '2D':
@@ -481,11 +485,11 @@ med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 # kpi styles
 KPI_label_font_size = '15' 
 KPI_label_font_color = '#FFFFFF'
-KPI_label_font_weight = '650' # thickness of the bold
+KPI_label_font_weight = '700' # thickness of the bold
 
 KPI_value_font_size = '26'
 KPI_value_font_color = '#022B3A'
-KPI_value_font_weight = '750' # thickness of the bold
+KPI_value_font_weight = '800' # thickness of the bold
 
 KPI_line_height = '25' # vertical spacing between the KPI label and value
 
@@ -506,11 +510,15 @@ with col3:
     subcol4.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median size (SF)</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
     
 
-# line chart
+# create some spacing inbetween KPIs and chart
+col3.write("")
+
+# draw the plotly line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False}, help='test')
 
-# arc logo
+# Draw ARC logo at the bottom of the page
 im = Image.open('content/logo.png')
+col3.write("")
 with col3:
     subcol1, subcol2, subcol3, subcol4, subcol5 = st.columns([1, 1, 1, 1, 1])
     subcol4.write("Powered by")
