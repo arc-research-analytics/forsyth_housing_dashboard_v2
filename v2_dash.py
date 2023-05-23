@@ -479,7 +479,7 @@ med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 
 # kpi styles
-KPI_label_font_size = '16' 
+KPI_label_font_size = '15' 
 KPI_label_font_color = '#FFFFFF'
 KPI_label_font_weight = '650' # thickness of the bold
 
