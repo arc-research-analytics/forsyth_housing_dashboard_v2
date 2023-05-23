@@ -65,12 +65,20 @@ if years[0] != years[1]:
 else:
     st.markdown(f"<h2 style='color:#FFFFFF; font-weight: 900;'>Forsyth County Housing Trends | <span style='color:#FFFFFF; font-weight: 500'>{years[0]} only</span></h2>", unsafe_allow_html=True)
 
-# square footage slider
-sq_footage = st.sidebar.select_slider(
-    'Home size (SF):',
-    options=['<1000',1000,2500,5000,'>5000'],
-    value=('<1000','>5000'),
-    help="Filter sales by square footage of home as reported by the county tax assessor's office."
+# # square footage slider
+# sq_footage = st.sidebar.select_slider(
+#     'Home size (SF):',
+#     options=['<1000',1000,2500,5000,'>5000'],
+#     value=('<1000','>5000'),
+#     help="Filter sales by square footage of home as reported by the county tax assessor's office."
+# )
+
+# construction vintage
+year_built = st.sidebar.select_slider(
+    'Year built:',
+    options=['<2000', '2000-2010', '2011-2023'],
+    value=('2000-2010', '2011-2023'),
+    help="Filter sales by the construction vintage of the home."
 )
 
 # sub-geography slider
@@ -88,7 +96,7 @@ if geography_included == 'Sub-geography':
         ['Cumming'],
         help="Select one or more pre-defined groupings of Census tracts.")
 
-# Map options
+# Map options sidebar section
 st.sidebar.write("---")
 st.sidebar.markdown(f"<p style='text-align:center; color:#FFFFFF; font-style:italic; line-height:2px'>Map options:</p>", unsafe_allow_html=True)
 map_view = st.sidebar.radio(
@@ -140,17 +148,32 @@ df_init = load_tab_data()
 def filter_data():
     df = df_init
 
-    # home size filter
-    if ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-        filtered_df = df[df['Square Ft'] <= sq_footage[1]]
-    elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-        filtered_df = df[df['Square Ft'] >= sq_footage[0]]
-    elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+    # # home size filter
+    # if ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
+    #     filtered_df = df[df['Square Ft'] <= sq_footage[1]]
+    # elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
+    #     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
+    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
+    #     filtered_df = df #i.e., don't apply a filter
+    # elif sq_footage[0] == sq_footage[1]:
+    #     st.error("Please select unique slider values for home size.")
+    # else:
+    #     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
+
+    # home construction vintage filter
+    if ((year_built[0] == '<2000') & (year_built[1] == '<2000')): # both '<2000'
+        filtered_df = df[df['year_blt'] < 2000]
+    elif ((year_built[0] == '2011-2023') & (year_built[1] == '2011-2023')): # both '2011-2023'
+        filtered_df = df[df['year_blt'] >= 2011]
+    elif ((year_built[0] == '2000-2010') & (year_built[1] == '2000-2010')): # both '2000-2010'
+        filtered_df = df[(df['year_blt'] >= 2000) & (df['year_blt'] <= 2010)]
+    elif ((year_built[0] == '2000-2010') & (year_built[1] == '2011-2023')): # upper 2 slider options
+        filtered_df = df[df['year_blt'] >= 2000]
+    elif ((year_built[0] == '<2000') & (year_built[1] == '2000-2010')): # lower 2 slider options
+        filtered_df = df[df['year_blt'] <= 2010]
+    elif ((year_built[0] == '<2000') & (year_built[1] == '2011-2023')):
         filtered_df = df #i.e., don't apply a filter
-    elif sq_footage[0] == sq_footage[1]:
-        st.error("Please select unique slider values for home size.")
-    else:
-        filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
+
 
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
@@ -370,12 +393,18 @@ def charter():
         hovertemplate=None
         )
 
+    # set chart title style variables
+    title_color = '#FFFFFF'
+    title_font_size = '20'
+    subtitle_color = '#022B3A'
+    subtitle_font_size = '14'
+
     # update the fig
     fig.update_layout(
-        title_text='<span style="font-size: 20px;">Median Sales Price / SF</span><br><span style="font-size: 14px;">Orange lines reflect range of selected years.</span>', 
+        title_text=f'<span style="font-size: {title_font_size}px; color: {title_color}">Monthly Median Sales Price / SF</span><br><span style="font-size: {subtitle_font_size}px; color: {subtitle_color}">Orange lines reflect range of selected years.</span>', 
         title_x=0, 
         title_y=0.93,
-        title_font_color="#022B3A",
+        # title_font_color="#022B3A",
         margin=dict(
             t=85
         ),
@@ -442,7 +471,7 @@ med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
 
 # kpi styles
 label_font_size = 16 
-label_font_color = '022B3A'
+label_font_color = 'FFFFFF'
 
 value_font_size = 30
 value_font_color = '022B3A'
@@ -460,11 +489,12 @@ with col3:
     # second metric - "Median price"
     subcol2.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median sale price</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
-    # third metric - "Median SF"
-    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median size (SF)</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
-
-    # fourth metric - "Median vintage"
-    subcol4.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median vintage</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
+    # third metric - "Median vintage"
+    subcol3.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median vintage</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
+    
+    # fourth metric - "Median SF"
+    subcol4.markdown(f"<span style='color:#{label_font_color}; font-size:{label_font_size}px; '>Median size (SF)</span><br><span style='color:#{value_font_color}; font-size:{value_font_size}px; font-weight:{value_font_weight}; line-height: {line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
+    
 
 # line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False}, help='test')
@@ -483,6 +513,6 @@ if map_view == '2D':
         expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
 else:
     with col1:
-        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> to rotate and change map angle in 3D view. Census tract 'height' represents the total sales.</span>", unsafe_allow_html=True)
+        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> in 3D view to rotate and change map angle. Census tract 'height' represents the total sales.</span>", unsafe_allow_html=True)
         expander = st.expander("Notes")
         expander.markdown("<span style='color:#022B3A'>Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
