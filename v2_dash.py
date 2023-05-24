@@ -162,7 +162,7 @@ def filter_data():
 
     # vintage filter 
     
-    # long way
+    # # long way
     # if year_built[0] == '<2000' and year_built[1] == '<2000':
     #     filtered_df = df[df['year_blt'] <= 1999]
     # elif year_built[0] == '2000-2010' and year_built[1] == '2011-2023':
@@ -514,7 +514,7 @@ with col3:
     subcol1.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Total home sales</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
     # second metric - "Median price"
-    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price_SF}</span>", unsafe_allow_html=True)
+    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
     # third metric - "Median vintage"
     subcol3.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median vintage</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
