@@ -415,6 +415,8 @@ def charter():
         chart_title_text = "Countywide Median Price / SF"
     elif len(sub_geo) == 1:
         chart_title_text = f"Median Price / SF For {sub_geo[0]}"
+    elif len(sub_geo) == 2:
+        chart_title_text = f"Median Price / SF For {sub_geo[0]} & {sub_geo[1]}"
     else:
         chart_title_text = f"Median Price / SF For Selected Regions"
 
