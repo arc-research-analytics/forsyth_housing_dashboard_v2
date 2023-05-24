@@ -122,7 +122,7 @@ map_view = st.sidebar.radio(
 base_map = st.sidebar.selectbox(
     'Base map:',
     ('Streets', 'Satellite', 'Gray'),
-    index=0,
+    index=2,
     help='Change underlying base map.'
 )
 
