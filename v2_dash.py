@@ -163,19 +163,18 @@ def filter_data():
     # vintage filter 
     
     # long way
-    st.write(year_built[0])
-    if year_built[0] == '<2000' and year_built[1] == '<2000':
-        filtered_df = df[df['year_blt'] <= 1999]
-    elif year_built[0] == '2000-2010' and year_built[1] == '2011-2023':
-        filtered_df = df[df['year_blt'] >= 2000]
-    elif year_built[0] == '2011-2023' and year_built[1] == '2011-2023':
-        filtered_df = df[df['year_blt'] >= 2011]
+    # if year_built[0] == '<2000' and year_built[1] == '<2000':
+    #     filtered_df = df[df['year_blt'] <= 1999]
+    # elif year_built[0] == '2000-2010' and year_built[1] == '2011-2023':
+    #     filtered_df = df[df['year_blt'] >= 2000]
+    # elif year_built[0] == '2011-2023' and year_built[1] == '2011-2023':
+    #     filtered_df = df[df['year_blt'] >= 2011]
 
     # short way
-    # lower_bound = year_built_dict[year_built[0]][0]
-    # upper_bound = year_built_dict[year_built[1]][1]
+    lower_bound = year_built_dict[year_built[0]][0]
+    upper_bound = year_built_dict[year_built[1]][1]
 
-    # filtered_df = df[(df['year_blt'] >= lower_bound) & (df['year_blt'] <= upper_bound)]
+    filtered_df = df[(df['year_blt'] >= lower_bound) & (df['year_blt'] <= upper_bound)]
 
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
