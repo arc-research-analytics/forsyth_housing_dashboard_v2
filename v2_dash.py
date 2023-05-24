@@ -161,8 +161,10 @@ def filter_data():
     df = df_init
 
     # home construction vintage filter using the `year_built_dict`
+    lower_bound = year_built_dict[year_built[0]][0]
+    upper_bound = year_built_dict[year_built[1]][1]
 
-    filtered_df = df[(df['year_blt'] >= year_built_dict[year_built[0]][0]) & (df['year_blt'] <= year_built_dict[year_built[1]][1])]
+    filtered_df = df[(df['year_blt'] >= lower_bound) & (df['year_blt'] <= upper_bound)]
 
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
