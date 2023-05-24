@@ -160,18 +160,6 @@ df_init = load_tab_data()
 def filter_data():
     df = df_init
 
-    # # home size filter
-    # if ((sq_footage[0] == '<1000') & (sq_footage[1] != '>5000')):
-    #     filtered_df = df[df['Square Ft'] <= sq_footage[1]]
-    # elif ((sq_footage[0] != '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = df[df['Square Ft'] >= sq_footage[0]]
-    # elif ((sq_footage[0] == '<1000') & (sq_footage[1] == '>5000')):
-    #     filtered_df = df #i.e., don't apply a filter
-    # elif sq_footage[0] == sq_footage[1]:
-    #     st.error("Please select unique slider values for home size.")
-    # else:
-    #     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
-
     # home construction vintage filter using the `year_built_dict`
 
     filtered_df = df[(df['year_blt'] >= year_built_dict[year_built[0]][0]) & (df['year_blt'] <= year_built_dict[year_built[1]][1])]
@@ -198,10 +186,10 @@ def filter_data():
 
 # colors to be used in the mapping functions
 custom_colors = [
-    '#97a3ab',
+    '#97a3ab', # lightest blue
     '#667883',
     '#37505d',
-    '#022b3a'
+    '#022b3a' #darkest blue
     ]
 
 # convert the above hex list to RGB values
@@ -487,8 +475,6 @@ if map_view == '2D':
     col1.pydeck_chart(mapper_2D(), use_container_width=True)
 else:
     col1.pydeck_chart(mapper_3D(), use_container_width=True)
-
-col1.write(f"{year_built_dict[year_built[0]][0]}, {year_built_dict[year_built[1]][1]}")
 
 # kpi values
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
