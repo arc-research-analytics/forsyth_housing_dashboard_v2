@@ -87,6 +87,12 @@ year_built = st.sidebar.select_slider(
     help="Filter sales by the construction vintage of the home."
 )
 
+year_built_dict = {
+    '<2000':[0, 1999],
+    '2000-2010':[2000, 2010],
+    '2011-2023':[2011, 2050]
+}
+
 # sub-geography slider
 geography_included = st.sidebar.radio(
     'Geography included:',
@@ -166,20 +172,9 @@ def filter_data():
     # else:
     #     filtered_df = df[(df['Square Ft'] >= sq_footage[0]) & (df['Square Ft'] <= sq_footage[1])]
 
-    # home construction vintage filter
-    if ((year_built[0] == '<2000') & (year_built[1] == '<2000')): # both '<2000'
-        filtered_df = df[df['year_blt'] < 2000]
-    elif ((year_built[0] == '2011-2023') & (year_built[1] == '2011-2023')): # both '2011-2023'
-        filtered_df = df[df['year_blt'] >= 2011]
-    elif ((year_built[0] == '2000-2010') & (year_built[1] == '2000-2010')): # both '2000-2010'
-        filtered_df = df[(df['year_blt'] >= 2000) & (df['year_blt'] <= 2010)]
-    elif ((year_built[0] == '2000-2010') & (year_built[1] == '2011-2023')): # upper 2 slider options
-        filtered_df = df[df['year_blt'] >= 2000]
-    elif ((year_built[0] == '<2000') & (year_built[1] == '2000-2010')): # lower 2 slider options
-        filtered_df = df[df['year_blt'] <= 2010]
-    elif ((year_built[0] == '<2000') & (year_built[1] == '2011-2023')):
-        filtered_df = df #i.e., don't apply a filter
+    # home construction vintage filter using the `year_built_dict`
 
+    filtered_df = df[(df['year_blt'] >= year_built_dict[year_built[0]][0]) & (df['year_blt'] <= year_built_dict[year_built[1]][1])]
 
     # filter by sub-geography (if applicable)
     if geography_included == 'Sub-geography':
@@ -492,6 +487,8 @@ if map_view == '2D':
     col1.pydeck_chart(mapper_2D(), use_container_width=True)
 else:
     col1.pydeck_chart(mapper_3D(), use_container_width=True)
+
+col1.write(f"{year_built_dict[year_built[0]][0]}, {year_built_dict[year_built[1]][1]}")
 
 # kpi values
 total_sales = '{:,.0f}'.format(filter_data()[1]['unique_ID'].sum())
