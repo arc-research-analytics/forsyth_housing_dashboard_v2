@@ -391,7 +391,7 @@ def charter():
         mode="lines",
         line_color='#022B3A',
         hovertemplate="<br>".join([
-            "<b>%{x}</b><br>",
+            # "<b>%{x}</b><br>",
             "Median price / SF: <b>%{y}</b>",
             "Total sales: <b>%{customdata[0]:,.0f}</b>"
             ])
@@ -425,9 +425,10 @@ def charter():
             t=85
         ),
         hoverlabel=dict(
-            bgcolor="#022B3A",
-            bordercolor = "#FFFFFF",
+            bgcolor="rgba(255, 255, 255, 0.8)",
+            bordercolor = "#022B3A",
             font_size=16, # set the font size of the chart tooltip
+            font_color="#022B3A",
             align="left"
             ),
         yaxis=dict(
@@ -449,7 +450,7 @@ def charter():
             dtick = 'M3'
             ),
         height=500,
-        hovermode="closest")
+        hovermode="x unified")
 
     # add shifting vertical lines
     year_start = {
