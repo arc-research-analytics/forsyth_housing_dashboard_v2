@@ -183,8 +183,12 @@ def filter_data():
     # year filter
     if years[0] != years[1]:
         filtered_df_map_KPI = filtered_df[(filtered_df['year_sale'] >= years[0]) & (filtered_df['year_sale'] <= years[1])]
+        df_KPI_delta0 = filtered_df[filtered_df['year_sale'] == years[0]]
+        df_KPI_delta1 = filtered_df[filtered_df['year_sale'] == years[1]]
     else:
         filtered_df_map_KPI = filtered_df[filtered_df['year_sale'] == years[0]]
+        df_KPI_delta0 = pd.DataFrame({'price_sf':[100]}) # create dummy dataframes in the case that the transaction year sliders are superimposed
+        df_KPI_delta1 = pd.DataFrame({'price_sf':[200]})
 
     # now group by GEOID
     grouped_df = filtered_df_map_KPI.groupby('GEOID').agg({
@@ -194,7 +198,7 @@ def filter_data():
         'unique_ID':'count',
         }).reset_index()
 
-    return filtered_df, grouped_df, filtered_df_map_KPI
+    return filtered_df, grouped_df, filtered_df_map_KPI, df_KPI_delta0, df_KPI_delta1
 
 # colors to be used in the mapping functions
 custom_colors = [
@@ -409,9 +413,9 @@ def charter():
     if sub_geo == "":
         chart_title_text = "Countywide Median Price / SF"
     elif len(sub_geo) == 1:
-        chart_title_text = f"Median Price / SF For {sub_geo[0]}"
+        chart_title_text = f"{sub_geo[0]} Median Price / SF"
     elif len(sub_geo) == 2:
-        chart_title_text = f"Median Price / SF For {sub_geo[0]} & {sub_geo[1]}"
+        chart_title_text = f"{sub_geo[0]} & {sub_geo[1]} Median Price / SF"
     else:
         chart_title_text = f"Median Price / SF For Selected Regions"
 
@@ -449,7 +453,7 @@ def charter():
             tickformat = '%b %Y',
             dtick = 'M3'
             ),
-        height=500,
+        height=460,
         hovermode="x unified")
 
     # add shifting vertical lines
@@ -495,37 +499,43 @@ median_price_SF = '${:.0f}'.format(filter_data()[2]['price_sf'].median())
 median_price = '${:,.0f}'.format(filter_data()[2]['Sale Price'].median())
 med_vintage = '{:.0f}'.format(filter_data()[2]['year_blt'].median())
 med_SF = '{:,.0f}'.format(filter_data()[2]['Square Ft'].median())
+YoY_delta = '{0:.1%}'.format((filter_data()[4]['price_sf'].median() - filter_data()[3]['price_sf'].median()) / filter_data()[3]['price_sf'].median())
 
 # kpi styles
 KPI_label_font_size = '15' 
 KPI_label_font_color = '#FFFFFF'
 KPI_label_font_weight = '700' # thickness of the bold
 
-KPI_value_font_size = '26'
+KPI_value_font_size = '25'
 KPI_value_font_color = '#022B3A'
 KPI_value_font_weight = '800' # thickness of the bold
 
 KPI_line_height = '25' # vertical spacing between the KPI label and value
+
 
 # KPI tyme
 with col3:
     subcol1, subcol2, subcol3, subcol4 = st.columns([1, 1, 1, 1])
 
     # first metric - "Total sales"
-    subcol1.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Total home sales</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
+    subcol1.markdown(f"<span style='color:{KPI_label_font_color}; font-size:{KPI_label_font_size}px; font-weight:{KPI_label_font_weight}'>Total home sales</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{total_sales}</span>", unsafe_allow_html=True)
     
     # second metric - "Median price"
-    subcol2.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price}</span>", unsafe_allow_html=True)
+    subcol2.markdown(f"<span style='color:{KPI_label_font_color}; font-size:{KPI_label_font_size}px; font-weight:{KPI_label_font_weight}'>Median sale price</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{median_price}</span>", unsafe_allow_html=True)
 
     # third metric - "Median vintage"
-    subcol3.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median vintage</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
+    subcol3.markdown(f"<span style='color:{KPI_label_font_color}; font-size:{KPI_label_font_size}px; font-weight:{KPI_label_font_weight}'>Median vintage</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_vintage}</span>", unsafe_allow_html=True)
     
     # fourth metric - "Median SF"
-    subcol4.markdown(f"<span style='color:{KPI_label_font_size}; font-size:{KPI_label_font_color}px; font-weight:{KPI_label_font_weight}'>Median size (SF)</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
+    subcol4.markdown(f"<span style='color:{KPI_label_font_color}; font-size:{KPI_label_font_size}px; font-weight:{KPI_label_font_weight}'>Median size (SF)</span><br><span style='color:{KPI_value_font_color}; font-size:{KPI_value_font_size}px; font-weight:{KPI_value_font_weight}; line-height: {KPI_line_height}px'>{med_SF}</span>", unsafe_allow_html=True)
+
+    # delta KPI, resting under the 4 KPIs above
+    if years[0] != years[1]:
+        col3.markdown(f"<span style='color:{KPI_label_font_color}; font-size: 17px; font-weight:{KPI_label_font_weight}; display: flex; justify-content: center; white-space:nowrap;'>Change in median price / SF from {years[0]} to {years[1]}: </span><span style='color:{KPI_value_font_color}; font-size: 25px; font-weight:{KPI_label_font_weight}; display:flex; justify-content:center; line-height:20px'>{YoY_delta} </span>", unsafe_allow_html=True)
+    else:
+        col3.markdown(f"<span style='color:{KPI_label_font_color}; font-size: 17px; font-weight:{KPI_label_font_weight}; display: flex; justify-content: center;'>No year over year change.</span>", unsafe_allow_html=True)
     
 
-# create some spacing inbetween KPIs and chart
-col3.write("")
 
 # draw the plotly line chart
 col3.plotly_chart(charter(), use_container_width=True, config = {'displayModeBar': False}, help='test')
@@ -545,6 +555,6 @@ if map_view == '2D':
         expander.markdown("<span style='color:#022B3A'> Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
 else:
     with col1:
-        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> in 3D view to rotate and change map angle. Census tract 'height' represents the total sales.</span>", unsafe_allow_html=True)
+        col1.markdown("<span style='color:#022B3A'><b>Shift + click</b> in 3D view to rotate and change map angle. Census tract 'height' represents total sales.</span>", unsafe_allow_html=True)
         expander = st.expander("Notes")
         expander.markdown("<span style='color:#022B3A'>Census tract 'height' representative of total sales per tract. Darker shades of Census tracts represent higher sales prices per SF for the selected time period. Dashboard excludes non-qualified, non-market, and bulk transactions. Excludes transactions below $1,000 and homes smaller than 75 square feet. Data downloaded from Forsyth County public records on May 11, 2023.</span>", unsafe_allow_html=True)
