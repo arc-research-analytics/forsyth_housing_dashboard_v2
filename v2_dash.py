@@ -30,6 +30,10 @@ hide_default_format = """
                 padding-right: 18px;
                 padding-top: 0px;
                 }
+            [data-testid="collapsedControl"] {
+                color: #FFFFFF;
+                background-color: #022B3A;
+                }
             span[data-baseweb="tag"] {
                 background-color: #022B3A 
                 }
