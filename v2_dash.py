@@ -233,6 +233,9 @@ def mapper_2D():
     # format the column to show the price / SF
     joined_df['price_sf_formatted'] = joined_df['price_sf'].apply(lambda x: "${:.0f}".format((x)))
 
+    # format the column to show the price 
+    joined_df['price_formatted'] = joined_df['Sale Price'].apply(lambda x: "${:,.0f}".format((x)))
+
     # add 1,000 separator to column that will show total sales
     joined_df['total_sales'] = joined_df['unique_ID'].apply(lambda x: '{:,}'.format(x))
 
@@ -274,7 +277,9 @@ def mapper_2D():
     
 
     tooltip = {
-            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>Total sales: <b>{total_sales}</b>",
+            "html": "Median price per SF: <b>{price_sf_formatted}</b><br>\
+                    Median price: <b>{price_formatted}</b><br>\
+                    Total sales: <b>{total_sales}</b>",
             "style": {"background": "rgba(2,43,58,0.7)", 
                       "border": "1px solid white", 
                       "color": "white", 
